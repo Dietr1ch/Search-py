@@ -1,0 +1,27 @@
+#+title: Search-py
+
+A collection of search algorithms for teaching and experimenting.
+
+* Non-adversarial Search
+  There's a heavy separation of concerns which leads to many tiny classes with
+  a small scope.
+  The library might be a bit overwhelming and seem to be an overkill, but it
+  should allow us to solve many different problems with many algorithms to
+  better understand their behavior.
+
+  There's a generic ~SearchAlgorithm~ implementation that can be extended to
+  implement (graph)-DFS, BFS, Dijkstra's Algorithm, A*. Currently only DFS and
+  BFS are implemented.
+
+** Class overview
+*** ~(root)~
+**** ~search~
+     - [[./search/space.py][space.py]]: ~Space, PredefinedSpace, RandomAccessSpace, Problem~
+***** ~algorithms~
+      - [[./search/algorithms/search.py][search.py]]: ~Node, SearchAlgorithm, Open~
+      - [[./search/algorithms/dfs.py][dfs.py]]: ~DFS(SearchAlgorithm), DFS.Open(SearchAlgorithm.Open)~
+      - [[./search/algorithms/bfs.py][bfs.py]]: ~BFS(SearchAlgorithm), BFS.Open(SearchAlgorithm.Open)~
+***** ~problems~
+****** ~grid~
+       - [[./search/problems/grid/board2d.py][board2d.py]]: ~class Board2D(Space, PredefinedSpace, RandomAccessSpace)~
+    - [[./main.py][main.py]]: Has a super simple benchmark.
