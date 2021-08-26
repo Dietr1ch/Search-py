@@ -69,6 +69,7 @@ def solve(algorithm_class, problem: Problem):
         "length": length,
         "expansions": search_algorithm.expansions,
         "time_ms": time_ms,
+        "actions": actions,
     }
 
 
@@ -78,7 +79,7 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
     Returns: Dictionary with a summary and key metrics.
     """
     print("Solving this %s problem," % problem.space.__class__.__name__)
-    print(board2d_str(problem))
+    print(problem.to_ascii_str())
 
     solutions = dict()
     best = {
@@ -104,7 +105,8 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
                 attrs = []
                 if ratio < 1.04:
                     continue
-                elif ratio >= 1.5:
+
+                if ratio >= 1.5:
                     color = 'red'
                     attrs = ['bold']
                 elif ratio >= 1.2:
@@ -120,40 +122,7 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
                     solutions[a][metric],
                     best[metric]))
     print("")
-
-
-def board2d_str(board2d_problem):
-    """Formats a Problem over a Board2D to an ASCII colored string.
-
-    Drawing a board is not enough as we want the problem's start and goal
-    states.
-    We don't have a nice way to write a generic function printing a generic
-    problem based on a generic space printer.
-    """
-    space = board2d_problem.space
-
-    board_str = ''
-    board_str += colored(('    █' + ('█' * (space.W)) +
-                         '█\n'), 'green', attrs=['bold'])
-
-    for y, row in enumerate(space.grid):
-        board_str += colored("%3d " % y, 'white')
-        board_str += colored("█", 'green', attrs=['bold'])
-        for x, is_wall in enumerate(row):
-            if board2d_problem.is_goal((x, y)):
-                board_str += colored('G', 'yellow', attrs=['bold'])
-            elif (x, y) in board2d_problem.starts:
-                board_str += colored('S', 'white', attrs=['bold'])
-            elif is_wall:
-                board_str += colored('█', 'green', attrs=['bold'])
-            else:
-                board_str += " "
-        board_str += colored('█', 'green', attrs=['bold']) + '\n'
-
-    board_str += colored(('    █' + ('█' * (space.W)) +
-                         '█\n'), 'green', attrs=['bold'])
-
-    return board_str
+    return solutions
 
 
 def main():

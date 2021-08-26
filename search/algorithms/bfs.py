@@ -2,9 +2,9 @@
 Breadth-first Search specialization of a generic search algorithm.
 """
 
-from typing import Hashable
+from typing import List, Set
 
-from search.algorithms.search import SearchAlgorithm, Node
+from search.algorithms.search import Node, SearchAlgorithm
 from search.space import Space
 
 
@@ -18,8 +18,8 @@ class BFS(SearchAlgorithm):
         """An Open set implementation using a Queue."""
 
         def __init__(self):
-            self.nodes = []
-            self.states = set()
+            self.nodes: List[Node] = []
+            self.states: Set[Space.State] = set()
 
         def insert(self, node: Node):
             """Appends a Node into the Open list."""
@@ -56,11 +56,11 @@ class BFS(SearchAlgorithm):
         return BFS.Open()
 
     @classmethod
-    def create_starting_node(cls, state: Hashable) -> Node:
+    def create_starting_node(cls, state: Space.State) -> Node:
         """Create an Starting Node."""
         return Node(state, action=None, parent=None)
 
-    def reach(self, state: Hashable, action: Space.Action, parent: Node):
+    def reach(self, state: Space.State, action: Space.Action, parent: Node):
         """Reaches a state and updates Open."""
         node = Node(state, action, parent)
 

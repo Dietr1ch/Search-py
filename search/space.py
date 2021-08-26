@@ -2,11 +2,23 @@
 Definitions for a Search Space and Search Problems over them.
 """
 
-from typing import Hashable, Iterable, Set, Tuple
+from typing import Iterable, Set, Tuple
 
 
 class Space():
     """A generic search space."""
+
+    class State():
+        """A state in the Search Space."""
+        def __hash__(self):
+            """The hash of this state."""
+            raise NotImplementedError("")
+        def __str__(self) -> str:
+            """The string representation of this state."""
+            raise NotImplementedError("")
+        def __eq__(self, other) -> bool:
+            """Compares 2 states."""
+            raise NotImplementedError("")
 
     class Action():
         """A generic action."""
@@ -19,22 +31,31 @@ class Space():
             """The string representation of this action."""
             raise NotImplementedError("")
 
-    def neighbors(self, state: Hashable) -> Iterable[Tuple[Action, Hashable]]:
+    def neighbors(self, state: State) -> Iterable[Tuple[Action, State]]:
         """The possible actions and their resulting State."""
+        raise NotImplementedError("")
+
+    def to_ascii_str(self, problem, state: State) -> str:
+        """Formats a Problem over a Board2D to an ASCII colored string."""
         raise NotImplementedError("")
 
 
 class Problem():
     """A generic problem definition that uses a goal function."""
 
-    def __init__(self, space: Space, starts: Set[Hashable]):
+    def __init__(self, space: Space, starts: Set[Space.State]):
         self.space = space
 
         self.starts = starts
 
-    def is_goal(self, state: Hashable) -> bool:
+    def is_goal(self, state: Space.State) -> bool:
         """Checks if a state is a goal for this Problem."""
         raise NotImplementedError("")
+
+    def to_ascii_str(self) -> str:
+        """Formats a Problem over to an ASCII colored string."""
+        some_start = next(iter(self.starts))
+        return self.space.to_ascii_str(self, some_start)
 
 
 class SimpleProblem(Problem):
@@ -42,13 +63,13 @@ class SimpleProblem(Problem):
 
     def __init__(self,
                  space: Space,
-                 starts: Set[Hashable],
-                 goal_positions: Set[Hashable]):
+                 starts: Set[Space.State],
+                 goal_positions: Set[Space.State]):
         super().__init__(space, starts)
 
         self.goals = goal_positions
 
-    def is_goal(self, state: Hashable):
+    def is_goal(self, state: Space.State):
         return state in self.goals
 
 
@@ -58,11 +79,11 @@ class PredefinedSpace(Space):
     Allows specifying problems for a given Space.
     """
 
-    def starting_states(self) -> Iterable[Hashable]:
+    def starting_states(self) -> Iterable[Space.State]:
         """Generates starting states."""
         raise NotImplementedError("")
 
-    def goal_states(self) -> Iterable[Hashable]:
+    def goal_states(self) -> Iterable[Space.State]:
         """Generates goal states."""
         raise NotImplementedError("")
 
@@ -87,7 +108,7 @@ class PredefinedSpace(Space):
 class RandomAccessSpace(Space):
     """A generic search space."""
 
-    def random_state(self) -> Hashable:
+    def random_state(self) -> Space.State:
         """Gets a random State with a Uniform distribution."""
         raise NotImplementedError("")
 

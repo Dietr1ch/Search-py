@@ -5,7 +5,7 @@ Definitions for a generic Search Algorithm.
 # https://stackoverflow.com/questions/33533148/how-do-i-type-hint-a-method-with-the-type-of-the-enclosing-class
 from __future__ import annotations
 
-from typing import Hashable, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from search.space import Space
 
@@ -27,15 +27,15 @@ class Node():
     """
 
     def __init__(self,
-                 state: Hashable,
+                 state: Space.State,
                  action: Optional[Space.Action],
                  parent: Optional[Node]):
-        self.state = state
+        self.state: Space.State = state
 
         self.action = action
         self.parent = parent
 
-    def path(self) -> Tuple[Hashable, List[Space.Action], Hashable]:
+    def path(self) -> Tuple[Space.State, List[Space.Action], Space.State]:
         """Gets the initial state and actions used to reach this node."""
         path: List[Space.Action] = []
 
@@ -43,7 +43,7 @@ class Node():
         ending_state = node.state
 
         while node.parent:
-            assert(node.action is not None)
+            assert node.action is not None
             action: Space.Action = node.action
             path.append(action)
             node = node.parent
@@ -51,6 +51,11 @@ class Node():
 
         path.reverse()
         return (starting_state, path, ending_state)
+
+    def __str__(self) -> str:
+        """The string representation of this Node."""
+        return "Node[s={}, a={}, p={}]".format(self.state, self.action,
+                                               self.parent)
 
 
 class SearchAlgorithm():
@@ -110,11 +115,11 @@ class SearchAlgorithm():
         raise NotImplementedError("")
 
     @classmethod
-    def create_starting_node(cls, state: Hashable) -> Node:
+    def create_starting_node(cls, state: Space.State) -> Node:
         """Creates an Starting Node."""
         raise NotImplementedError("")
 
-    def reach(self, state: Hashable, action: Space.Action, parent: Node):
+    def reach(self, state: Space.State, action: Space.Action, parent: Node):
         """Reaches a state and updates Open"""
         raise NotImplementedError("")
 
