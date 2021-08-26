@@ -6,7 +6,6 @@ A small binary showcasing the search library
 
 import copy
 import random
-import time
 from typing import List
 
 from termcolor import colored
@@ -24,10 +23,8 @@ def solve(algorithm_class, problem: Problem):
     Returns: Dictionary with a summary and key metrics.
     """
     search_algorithm: SearchAlgorithm = algorithm_class(problem)
-    start_ts_ns = time.perf_counter_ns()
     goal_node = search_algorithm.search()
-    end_ts_ns = time.perf_counter_ns()
-    time_ms = (end_ts_ns - start_ts_ns) / 1_000_000.0
+    time_ms = (search_algorithm.time_ns) / 1_000_000.0
     if goal_node is None:
         return {
             "summary": "No solution found for this problem after {} expansions".format(search_algorithm.expansions),

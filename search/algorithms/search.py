@@ -5,6 +5,7 @@ Definitions for a generic Search Algorithm.
 # https://stackoverflow.com/questions/33533148/how-do-i-type-hint-a-method-with-the-type-of-the-enclosing-class
 from __future__ import annotations
 
+import time
 from typing import List, Optional, Tuple
 
 from search.space import Space
@@ -75,7 +76,8 @@ class SearchAlgorithm():
         self.closed = set()
 
         # Statistics
-        self.expansions = 0
+        self.expansions: int = 0
+        self.time_ns: Optional[int] = None
 
     class Open():
         """A generic Open set.
@@ -123,7 +125,7 @@ class SearchAlgorithm():
         """Reaches a state and updates Open"""
         raise NotImplementedError("")
 
-    def search(self) -> Optional[Node]:
+    def _actually_search(self) -> Optional[Node]:
         """Finds a single goal Node."""
         for start in self.problem.starts:
             self.open.insert(self.create_starting_node(start))
@@ -145,3 +147,11 @@ class SearchAlgorithm():
                 self.reach(state, action, parent=node)
 
         return None
+
+    def search(self) -> Optional[Node]:
+        """Finds a single goal Node."""
+        self.time_ns = time.perf_counter_ns()
+        solution = self._actually_search()
+        self.time_ns = time.perf_counter_ns() - self.time_ns
+
+        return solution

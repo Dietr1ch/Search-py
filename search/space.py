@@ -107,12 +107,12 @@ class PredefinedSpace(Space):
                 yield SimpleProblem(self, set([start]), set([goal]))
 
     def multi_goal_given(self) -> Iterable[SimpleProblem]:
-        """Generates problems with a single start and multiple goals."""
+        """Generates problems with a single start and all goals."""
         for start in self.starting_states():
             yield SimpleProblem(self, set([start]), set(self.goal_states()))
 
     def multi_start_and_goal_given(self) -> SimpleProblem:
-        """Generates problems with a multiple starts and goals."""
+        """Generates problems with a all starts and goals."""
         return SimpleProblem(self,
                              set(self.starting_states()),
                              set(self.goal_states()))
