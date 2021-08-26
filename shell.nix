@@ -9,14 +9,7 @@ in
 
     src = pkgs.lib.cleanSource ./.;
 
-    # Build environment
-    buildInputs = with pyPkgs; [
-      importmagic
-      epc
-      python-language-server
-      graphviz
-    ];
-    # Run
+    # Run environment
     propagatedBuildInputs = with pyPkgs; [
       numpy
       pygame_sdl2
@@ -28,6 +21,13 @@ in
       mypy
       pylint
       pytest
+
+      # Tools that become available on the shell
+      graphviz
+      ipython
+      importmagic
+      epc
+      python-language-server
     ];
     checkPhase = ''
       autopep8 --aggressive --exit-code */.py **/.py
