@@ -4,6 +4,7 @@
 A small binary showcasing the search library
 """
 
+import copy
 import random
 import time
 from typing import List
@@ -53,7 +54,12 @@ def solve(algorithm_class, problem: Problem):
             last = a
         compressed_path.append("%2d%s" % (count, str(last)))
 
-    cost = sum([a.cost() for a in actions])
+    current_state = copy.deepcopy(start)
+    cost = 0
+    for action in actions:
+        cost += action.cost(current_state)
+        current_state = problem.space.execute(current_state, action)
+    assert current_state == goal
     length = len(actions)
 
     return {

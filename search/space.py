@@ -23,7 +23,9 @@ class Space():
     class Action():
         """A generic action."""
 
-        def cost(self):  # pylint: disable=no-self-use
+        # pylint: disable=unused-argument
+        # pylint: disable=no-self-use
+        def cost(self, state):
             """The cost of executing this action."""
             return 0
 
@@ -34,6 +36,17 @@ class Space():
     def neighbors(self, state: State) -> Iterable[Tuple[Action, State]]:
         """The possible actions and their resulting State."""
         raise NotImplementedError("")
+
+    def execute(self, state: State, action: Action) -> State:
+        """Applies an action into some State.
+
+        Reuses the neighbors(state) as this is not performance critical.
+        """
+        # pylint: disable=invalid-name
+        for a, s in self.neighbors(state):
+            if a == action:
+                return s
+        raise ValueError("Received an action that can't be performed at this State")
 
     def to_ascii_str(self, problem, state: State) -> str:
         """Formats a Problem over a Board2D to an ASCII colored string."""

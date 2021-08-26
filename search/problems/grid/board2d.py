@@ -53,7 +53,7 @@ class Board2D(PredefinedSpace, RandomAccessSpace):
         LEFT = "←"
         RIGHT = "→"
 
-        def cost(self):  # pylint: disable=no-self-use
+        def cost(self, state: Board2D.State):  # pylint: disable=no-self-use
             """The cost of executing this action."""
             return 1
 
