@@ -121,7 +121,7 @@ class Board2D(PredefinedSpace, RandomAccessSpace):
                 yield (a, new_state)
 
     def to_str(self, problem: Problem, state: State) -> str:
-        """Formats a Problem over a Board2D to an ASCII colored string.
+        """Formats a Problem over a Board2D to a colored string.
 
         Drawing a board is not enough as we want the problem's start and goal
         states.
@@ -131,7 +131,6 @@ class Board2D(PredefinedSpace, RandomAccessSpace):
         board_str = ''
         board_str += colored(('    █' + ('█' * (self.W)) +
                              '█\n'), 'green', attrs=['bold'])
-
 
         for y in range(self.H):
             board_str += colored("%3d " % y, 'white')

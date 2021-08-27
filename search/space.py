@@ -11,12 +11,15 @@ class Space():
 
     class State():
         """A state in the Search Space."""
+
         def __hash__(self):
             """The hash of this state."""
             raise NotImplementedError("")
+
         def __str__(self) -> str:
             """The string representation of this state."""
             raise NotImplementedError("")
+
         def __eq__(self, other) -> bool:
             """Compares 2 states."""
             raise NotImplementedError("")
@@ -54,7 +57,7 @@ class Space():
             "Received an action that can't be performed at this State. Can't perform {} from {}. Can only perform {}".format(action, state, ", ".join(action_strs)))
 
     def to_str(self, problem, state: State) -> str:
-        """Formats a Problem over a Board2D to an ASCII colored string."""
+        """Formats a Problem over a Space to a string."""
         raise NotImplementedError("")
 
 
