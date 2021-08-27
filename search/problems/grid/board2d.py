@@ -120,7 +120,7 @@ class Board2D(PredefinedSpace, RandomAccessSpace):
                 new_state.position = cell
                 yield (a, new_state)
 
-    def to_ascii_str(self, problem: Problem, state: State) -> str:
+    def to_str(self, problem: Problem, state: State) -> str:
         """Formats a Problem over a Board2D to an ASCII colored string.
 
         Drawing a board is not enough as we want the problem's start and goal

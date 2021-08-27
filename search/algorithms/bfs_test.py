@@ -40,6 +40,6 @@ def test_expansion_order():
     goal_node: Optional[Node] = bfs.search()
 
     assert goal_node is not None
-    assert goal_node.path() is not None
+    assert goal_node.path(space) is not None
     assert 2*length < bfs.expansions <= 2*(length+1)
     assert 100_000 < bfs.time_ns < 100_000_000

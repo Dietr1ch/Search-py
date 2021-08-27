@@ -51,19 +51,26 @@ def test_expansion_order():
 
         # Search
         goal_node: Optional[Node] = dfs.search()
-        solutions.append((dfs, goal_node))
-
         assert goal_node is not None
-        assert goal_node.path() is not None
+        assert goal_node is not None
 
-    lengths = [len(goal_node.path()) for _, goal_node in solutions]
+        path = goal_node.path(space)
+        assert path is not None
+
+        solutions.append({
+            "algorithm": dfs,
+            "goal_node": goal_node,
+            "path": path,
+        })
+
+    lengths = [len(path) for _, _, path in solutions]
     if lengths[0] > lengths[1]:
         solutions.reverse()
 
     good_luck = solutions[0]
     bad_luck = solutions[1]
-    assert len(good_luck[1].path()[1]) == length + 1
-    assert good_luck[0].expansions == 2 * length + 1
+    assert len(good_luck["path"]) == length + 1
+    assert good_luck["algorithm"].expansions == 2 * length + 1
 
-    assert len(bad_luck[1].path()[1]) == length + 1
-    assert bad_luck[0].expansions == length + 1
+    assert len(bad_luck["path"]) == length + 1
+    assert bad_luck["algorithm"].expansions == length + 1

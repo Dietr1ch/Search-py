@@ -2,7 +2,8 @@
 Definitions for a Search Space and Search Problems over them.
 """
 
-from typing import Iterable, Set, Tuple
+import copy
+from typing import Iterable, Optional, Set, Tuple
 
 
 class Space():
@@ -45,10 +46,14 @@ class Space():
         # pylint: disable=invalid-name
         for a, s in self.neighbors(state):
             if a == action:
-                return s
-        raise ValueError("Received an action that can't be performed at this State")
+                return copy.deepcopy(s)
 
-    def to_ascii_str(self, problem, state: State) -> str:
+        # Something is wrong, let's try to explain the current state.
+        action_strs = [str(a) for a, _ in self.neighbors(state)]
+        raise ValueError(
+            "Received an action that can't be performed at this State. Can't perform {} from {}. Can only perform {}".format(action, state, ", ".join(action_strs)))
+
+    def to_str(self, problem, state: State) -> str:
         """Formats a Problem over a Board2D to an ASCII colored string."""
         raise NotImplementedError("")
 
@@ -65,10 +70,14 @@ class Problem():
         """Checks if a state is a goal for this Problem."""
         raise NotImplementedError("")
 
-    def to_ascii_str(self) -> str:
-        """Formats a Problem over to an ASCII colored string."""
-        some_start = next(iter(self.starts))
-        return self.space.to_ascii_str(self, some_start)
+    def to_str(self, state: Optional[Space.State] = None) -> str:
+        """Formats a Problem over to a string.
+
+        Only one of the starting state is depicted.
+        """
+        if state is None:
+            state = next(iter(self.starts))
+        return self.space.to_str(self, state)
 
 
 class SimpleProblem(Problem):

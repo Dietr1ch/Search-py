@@ -5,8 +5,11 @@ Definitions for a generic Search Algorithm.
 # https://stackoverflow.com/questions/33533148/how-do-i-type-hint-a-method-with-the-type-of-the-enclosing-class
 from __future__ import annotations
 
+import copy
 import time
-from typing import List, Optional, Tuple
+from typing import Iterable, List, Optional, Tuple
+
+from termcolor import colored
 
 from search.space import Space
 
@@ -36,27 +39,102 @@ class Node():
         self.action = action
         self.parent = parent
 
-    def path(self) -> Tuple[Space.State, List[Space.Action], Space.State]:
+    def path(self, space: Space) -> Path:
         """Gets the initial state and actions used to reach this node."""
-        path: List[Space.Action] = []
-
-        node = self
-        ending_state = node.state
-
-        while node.parent:
-            assert node.action is not None
-            action: Space.Action = node.action
-            path.append(action)
-            node = node.parent
-        starting_state = node.state
-
-        path.reverse()
-        return (starting_state, path, ending_state)
+        return Path(space, self)
 
     def __str__(self) -> str:
         """The string representation of this Node."""
-        return "Node[s={}, a={}, p={}]".format(self.state, self.action,
-                                               self.parent)
+        parent_action = "ø"
+        parent_state = "ø"
+        if self.parent:
+            parent_action = self.action
+            parent_state = self.parent.state
+        return "Node[s={}, a={}, p.s={}]".format(self.state, self.action,
+                                                 parent_state)
+
+class Path():
+    """A path in the Search Tree.
+
+    Computes the full path on initialization to help free the Nodes.
+    """
+
+    def __init__(self, space: Space, goal_node: Node):
+        self.space: Space = space
+        self.end: Space.State = copy.deepcopy(goal_node.state)
+        self.path: List[Space.Action] = []
+
+        node = goal_node
+        while node.parent is not None:
+            assert node.parent is not None
+            assert node.action is not None
+
+            self.path.append(node.action)
+            node = node.parent
+        self.path.reverse()
+
+        assert node.parent is None
+        assert node.action is None
+
+        self.start = copy.deepcopy(node.state)
+
+        # Precompute cost
+        current_state = copy.deepcopy(self.start)
+        self.path_cost = 0
+        for action in self.path:
+            self.path_cost += action.cost(current_state)
+            current_state = space.execute(current_state, action)
+        assert current_state == self.end
+
+    def starting_state(self) -> Space.State:
+        """The State where this Path begins."""
+        return self.start
+
+    def final_state(self) -> Space.State:
+        """The State at the end of this Path."""
+        return self.end
+
+    def actions(self) -> Iterable[Space.Action]:
+        """The full sequence of actions to reach a state."""
+        return self.path
+
+    def __len__(self) -> int:
+        """The length of this Path."""
+        return len(self.path)
+
+    def cost(self) -> int:
+        """The cost of this Path.
+
+        This is recomputed from the State and Actions. It discards information
+        from the search to avoid trusting every implementation.
+        """
+        return self.path_cost
+
+    def compressed_actions(self) -> Iterable[Tuple[int, Space.Action]]:
+        """A run-length encoding of the Path."""
+        if not self.path:
+            return
+
+        last_action = self.path[0]
+        count = 0
+
+        for action in self.path:
+            if action == last_action:
+                count += 1
+                continue
+            yield (count, last_action)
+            count = 1
+            last_action = action
+        yield (count, last_action)
+
+    def __str__(self) -> str:
+        return "Path[c:{}, l:{}, p:{} => {} => {}]".format(
+            self.cost(),
+            len(self),
+            colored(str(self.starting_state()), 'green', attrs=['bold']),
+            colored(" ".join([str(n)+str(a) for n, a in self.compressed_actions()]),
+                    'blue', attrs=['bold']),
+            colored(str(self.final_state()), 'yellow', attrs=['bold']))
 
 
 class SearchAlgorithm():

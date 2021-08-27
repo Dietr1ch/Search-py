@@ -4,7 +4,6 @@
 A small binary showcasing the search library
 """
 
-import copy
 import random
 from typing import List
 
@@ -34,45 +33,19 @@ def solve(algorithm_class, problem: Problem):
             "time_ms": time_ms,
         }
 
-    start, actions, goal = goal_node.path()
-
-    compressed_path = []
-    if len(actions):
-        last = actions[0]
-        count = 0
-
-        # pylint: disable=invalid-name
-        for a in actions:
-            if a == last:
-                count += 1
-                continue
-            compressed_path.append("%2d%s" % (count, str(last)))
-            count = 1
-            last = a
-        compressed_path.append("%2d%s" % (count, str(last)))
-
-    current_state = copy.deepcopy(start)
-    cost = 0
-    for action in actions:
-        cost += action.cost(current_state)
-        current_state = problem.space.execute(current_state, action)
-    assert current_state == goal
-    length = len(actions)
+    path = goal_node.path(problem.space)
 
     return {
-        "summary": "expanded {:-3} nodes to find: (c:{}, l:{}, t:{:.2}ms) {} => {} => {}".format(
+        "summary": "Expanded {:-3} nodes in t:{:.2}ms to find: {}".format(
             search_algorithm.expansions,
-            cost,
-            length,
             time_ms,
-            colored(str(start), 'green', attrs=['bold']),
-            colored(" ".join(compressed_path), 'blue', attrs=['bold']),
-            colored(str(goal), 'yellow', attrs=['bold'])),
-        "cost": cost,
-        "length": length,
+            path),
+        "path": path,
+        "cost": path.cost(),
+        "length": len(path),
         "expansions": search_algorithm.expansions,
         "time_ms": time_ms,
-        "actions": actions,
+        "actions": path.actions(),
     }
 
 
@@ -82,7 +55,7 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
     Returns: Dictionary with a summary and key metrics.
     """
     print("Solving this %s problem," % problem.space.__class__.__name__)
-    print(problem.to_ascii_str())
+    print(problem.to_str())
 
     solutions = dict()
     best = {
