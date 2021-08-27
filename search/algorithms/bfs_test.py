@@ -8,13 +8,13 @@ from search.space import Problem, Space
 
 def test_no_solution():
     space: Space = Board2D([
-            "     ",
-            " ####",
-            "     ",
-            "#### ",
-            "     ",
-            "S    ",
-     ])
+        "     ",
+        " ####",
+        "     ",
+        "#### ",
+        "     ",
+        "S    ",
+    ])
     problem: Problem = next(iter(space.multi_goal_given()))
     bfs: SearchAlgorithm = BFS(problem)
 
@@ -31,8 +31,8 @@ def test_no_solution():
 def test_expansion_order():
     length = 100
     space: Space = Board2D([
-            "G" + " "*length + "S" + " "*length,
-     ])
+        "G" + " " * length + "S" + " " * length,
+    ])
     problem: Problem = next(iter(space.multi_goal_given()))
     bfs: SearchAlgorithm = BFS(problem)
 
@@ -41,5 +41,5 @@ def test_expansion_order():
 
     assert goal_node is not None
     assert goal_node.path(space) is not None
-    assert 2*length < bfs.expansions <= 2*(length+1)
+    assert 2 * length < bfs.expansions <= 2 * (length + 1)
     assert 100_000 < bfs.time_ns < 100_000_000

@@ -53,6 +53,7 @@ class Node():
         return "Node[s={}, a={}, p.s={}]".format(self.state, self.action,
                                                  parent_state)
 
+
 class Path():
     """A path in the Search Tree.
 
@@ -132,7 +133,7 @@ class Path():
             self.cost(),
             len(self),
             colored(str(self.starting_state()), 'green', attrs=['bold']),
-            colored(" ".join([str(n)+str(a) for n, a in self.compressed_actions()]),
+            colored(" ".join([str(n) + str(a) for n, a in self.compressed_actions()]),
                     'blue', attrs=['bold']),
             colored(str(self.final_state()), 'yellow', attrs=['bold']))
 

@@ -8,13 +8,13 @@ from search.space import Problem, Space
 
 def test_no_solution():
     space: Space = Board2D([
-            "     ",
-            " ####",
-            "     ",
-            "#### ",
-            "     ",
-            "S    ",
-     ])
+        "     ",
+        " ####",
+        "     ",
+        "#### ",
+        "     ",
+        "S    ",
+    ])
     problem: Problem = next(iter(space.multi_goal_given()))
     dfs: SearchAlgorithm = DFS(problem)
 
@@ -34,7 +34,7 @@ def test_expansion_order():
     # unlucky on the other one and expand all the nodes.
     # This holds because the expansion order and retrieval from Open is
     # deterministic.
-    empty_space_str = "" + " "*length + "S" + " "*length
+    empty_space_str = "" + " " * length + "S" + " " * length
     spaces = [
         Board2D([
             "G" + empty_space_str,
