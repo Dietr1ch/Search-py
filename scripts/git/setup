@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+GIT_ROOT=$(git rev-parse --show-toplevel)
+
+cp -f $GIT_ROOT/scripts/git/hooks/pre-commit $GIT_ROOT/.git/hooks/pre-commit
