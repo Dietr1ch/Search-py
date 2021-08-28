@@ -3,7 +3,7 @@ from typing import Optional
 from search.algorithms.dfs import DFS
 from search.algorithms.search import Node, SearchAlgorithm
 from search.problems.grid.board2d import Board2D
-from search.space import Problem, Space
+from search.space import Problem, SimpleProblem, Space
 
 
 def test_no_solution():
@@ -15,7 +15,7 @@ def test_no_solution():
         "     ",
         "S    ",
     ])
-    problem: Problem = next(iter(space.multi_goal_given()))
+    problem: Problem = next(iter(SimpleProblem.multi_goal_given(space=space)))
     dfs: SearchAlgorithm = DFS(problem)
 
     # Search
@@ -46,7 +46,10 @@ def test_expansion_order():
 
     solutions = []
     for space in spaces:
-        problem: Problem = next(iter(space.multi_goal_given()))
+        problem: Problem = next(
+            iter(
+                SimpleProblem.multi_goal_given(
+                    space=space)))
         dfs: SearchAlgorithm = DFS(problem)
 
         # Search

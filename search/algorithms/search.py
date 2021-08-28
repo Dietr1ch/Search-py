@@ -206,7 +206,7 @@ class SearchAlgorithm():
 
     def _actually_search(self) -> Optional[Node]:
         """Finds a single goal Node."""
-        for start in self.problem.starts:
+        for start in self.problem.starting_states:
             self.open.insert(self.create_starting_node(start))
 
         while self.open:

@@ -13,7 +13,8 @@ from search.algorithms.bfs import BFS
 from search.algorithms.dfs import DFS
 from search.algorithms.search import SearchAlgorithm
 from search.problems.grid.board2d import Board2D
-from search.space import Problem
+from search.space import (PredefinedSpace, Problem, RandomAccessSpace,
+                          SimpleProblem, Space)
 
 
 def solve(algorithm_class, problem: Problem):
@@ -55,7 +56,7 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
     Returns: Dictionary with a summary and key metrics.
     """
     print("Solving this %s problem," % problem.space.__class__.__name__)
-    print(problem.to_str())
+    print(problem.start_to_str())
 
     solutions = dict()
     best = {
@@ -103,7 +104,7 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
 
 def main():
     """A simple program solving an easy maze."""
-    spaces = [
+    spaces: List[Space] = [
         Board2D([
             "   G ",
             " ####",
@@ -140,17 +141,19 @@ def main():
     problems = []
     random_problems = 1
     for space in spaces:
-        # Add all the simple given problems
-        for p in space.simple_given():
-            problems.append(p)
+        if isinstance(space, PredefinedSpace):
+            # Add all the simple given problems
+            for p in SimpleProblem.simple_given(space=space):
+                problems.append(p)
 
-        # Add all the multi-goal given problems
-        for p in space.multi_goal_given():
-            problems.append(p)
+            # Add all the multi-goal given problems
+            for p in SimpleProblem.multi_goal_given(space=space):
+                problems.append(p)
 
-        random.seed(1)
-        for _ in range(random_problems):
-            problems.append(space.simple_random())
+        if isinstance(space, RandomAccessSpace):
+            random.seed(1)
+            for _ in range(random_problems):
+                problems.append(SimpleProblem.simple_random(space))
 
     algorithms = [
         DFS,

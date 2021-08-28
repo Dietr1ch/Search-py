@@ -8,10 +8,11 @@ from __future__ import annotations
 import copy
 import random
 from enum import Enum
-from typing import Iterable, List, Tuple
+from typing import Iterable, List, Set, Tuple
 
 import numpy as np
-from search.space import PredefinedSpace, Problem, RandomAccessSpace, Space
+from search.space import (PredefinedSpace, Problem, RandomAccessSpace,
+                          SimpleProblem, Space)
 from termcolor import colored
 
 
@@ -31,20 +32,22 @@ class Board2D(PredefinedSpace, RandomAccessSpace):
     """
 
     class State(Space.State):
-        def __init__(self, x: int, y: int):
-            self.position = (x, y)
+        """The game state."""
+
+        def __init__(self, agent_position: Tuple[int, int]):
+            self.agent_position = agent_position
 
         def __hash__(self):
             """The hash of this state."""
-            return hash(self.position)
+            return hash(self.agent_position)
 
         def __str__(self) -> str:
             """The string representation of this state."""
-            return "Board2d.State[{}]".format(self.position)
+            return "Board2d.State[{}]".format(self.agent_position)
 
         def __eq__(self, other: Board2D.State) -> bool:
             """Compares 2 states."""
-            return self.position == other.position
+            return self.agent_position == other.agent_position
 
     class Action(Space.Action, Enum):
         """Grid actions."""
@@ -56,10 +59,6 @@ class Board2D(PredefinedSpace, RandomAccessSpace):
         def cost(self, state: Board2D.State):  # pylint: disable=no-self-use
             """The cost of executing this action."""
             return 1
-
-        def __str__(self) -> str:
-            """The string representation of this action."""
-            return str(self.value)
 
     def __init__(self, grid: List[str]):
         # Store the predefined start and goal states
@@ -79,12 +78,15 @@ class Board2D(PredefinedSpace, RandomAccessSpace):
                     self.grid[y][x] = True
                     continue
 
-                self.empty_cells.add((x, y))
-
+                position = (x, y)
+                self.empty_cells.add(position)
                 if char == "S":
-                    self.starts.append(Board2D.State(x, y))
+                    self.starts.append(Board2D.State(position))
                 elif char == "G":
-                    self.goals.append(Board2D.State(x, y))
+                    self.goals.append(Board2D.State(position))
+
+        # Getting random empty cells uses a list.
+        self.empty_cell_list = list(self.empty_cells)
 
     def is_wall(self, cell):
         """Checks if a cell has a wall."""
@@ -114,52 +116,17 @@ class Board2D(PredefinedSpace, RandomAccessSpace):
             self, state: Board2D.State) -> Iterable[Tuple[Board2D.Action, Board2D.State]]:
         """Generates the Actions and neighbor States."""
         # pylint: disable=invalid-name
-        for a, cell in self.adjacent_coordinates(cell=state.position):
+        for a, cell in self.adjacent_coordinates(cell=state.agent_position):
             if not self.is_wall(cell):
-                new_state: Board2D.State = copy.deepcopy(state)
-                new_state.position = cell
-                yield (a, new_state)
-
-    def to_str(self, problem: Problem, state: State) -> str:
-        """Formats a Problem over a Board2D to a colored string.
-
-        Drawing a board is not enough as we want the problem's start and goal
-        states.
-        We don't have a nice way to write a generic function printing a generic
-        problem based on a generic space printer.
-        """
-        board_str = ''
-        board_str += colored(('    █' + ('█' * (self.W)) +
-                             '█\n'), 'green', attrs=['bold'])
-
-        for y in range(self.H):
-            board_str += colored("%3d " % y, 'white')
-            board_str += colored("█", 'green', attrs=['bold'])
-            for x in range(self.W):
-                char_state = copy.deepcopy(state)
-                char_state.position = (x, y)
-                if problem.is_goal(char_state):
-                    board_str += colored('G', 'yellow', attrs=['bold'])
-                elif char_state in problem.starts:
-                    board_str += colored('S', 'white', attrs=['bold'])
-                elif self.is_wall(char_state.position):
-                    board_str += colored('█', 'green', attrs=['bold'])
-                else:
-                    board_str += " "
-            board_str += colored('█', 'green', attrs=['bold']) + '\n'
-
-        board_str += colored(('    █' + ('█' * (self.W)) +
-                             '█\n'), 'green', attrs=['bold'])
-
-        return board_str
+                yield (a, Board2D.State(cell))
 
     # PredefinedSpace
     # ---------------
-    def starting_states(self) -> Iterable[Board2D.State]:
+    def predefined_starting_states(self) -> Iterable[Board2D.State]:
         """The predefined starting states."""
         return self.starts
 
-    def goal_states(self) -> Iterable[Board2D.State]:
+    def predefined_goal_states(self) -> Iterable[Board2D.State]:
         """The predefined goal states."""
         return self.goals
 
@@ -167,5 +134,43 @@ class Board2D(PredefinedSpace, RandomAccessSpace):
     # -----------------
     def random_state(self) -> Board2D.State:
         """Returns a random state."""
-        r_x, r_y = random.choice(list(self.empty_cells))
-        return Board2D.State(r_x, r_y)
+        return Board2D.State(random.choice(self.empty_cell_list))
+
+    @classmethod
+    def to_str(cls, problem: Problem, state: Space.State) -> str:
+        """Formats a Problem over a Board2D to a colored string.
+
+        Drawing a board is not enough as we want the problem's start and goal
+        states.
+        We don't have a nice way to write a generic function printing a generic
+        problem based on a generic space printer.
+        """
+        assert isinstance(problem.space, Board2D)
+        assert isinstance(state, Board2D.State)
+
+        space = problem.space
+        board_str = ''
+        board_str += colored(('    █' + ('█' * (space.W)) +
+                             '█\n'), 'green', attrs=['bold'])
+
+        for y in range(space.H):
+            board_str += colored("%3d " % y, 'white')
+            board_str += colored("█", 'green', attrs=['bold'])
+            for x in range(space.W):
+                char_state = copy.deepcopy(state)
+                char_state.agent_position = (x, y)
+                if problem.is_goal(char_state):
+                    board_str += colored('G', 'yellow', attrs=['bold'])
+                elif char_state in problem.starting_states:
+                    board_str += colored('S', 'white', attrs=['bold'])
+                elif space.is_wall(char_state.agent_position):
+                    board_str += colored('█', 'green', attrs=['bold'])
+                else:
+                    board_str += " "
+            board_str += colored('█', 'green', attrs=['bold']) + '\n'
+
+        board_str += colored(('    █' + ('█' * (space.W)) +
+                             '█\n'), 'green', attrs=['bold'])
+
+        return board_str
+        pass
