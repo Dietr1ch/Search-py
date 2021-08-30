@@ -23,11 +23,6 @@ class DFS(SearchAlgorithm):
 
         def insert(self, node: Node):
             """Inserts a Node into Open."""
-            if node.state in self.states:
-                # If the state was already in Open, then we discard this new
-                # path as we don't have a way of telling which one is better.
-                return
-
             self.states.add(node.state)
             self.nodes.append(node)
 
@@ -44,6 +39,10 @@ class DFS(SearchAlgorithm):
         def __bool__(self) -> bool:
             """Checks if there's Nodes in Open."""
             return len(self.nodes) > 0
+
+        def __contains__(self, state: Space.State) -> bool:
+            """Checks if there's a Node for a state in Open."""
+            return state in self.states
 
     @classmethod
     def name(cls) -> str:
@@ -62,6 +61,9 @@ class DFS(SearchAlgorithm):
 
     def reach(self, state: Space.State, action: Space.Action, parent: Node):
         """Reaches a state and updates Open."""
-        node = Node(state, action, parent)
+        if state in self.open:
+            # If the state was already in Open, then we discard this new path
+            # as we don't have a way of telling which one is better.
+            return
 
-        self.open.insert(node)
+        self.open.insert(Node(state, action, parent))
