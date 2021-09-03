@@ -7,9 +7,11 @@ from search.space import Problem, Space
 
 
 def test_no_solution():
-    metaproblem = Grid2DMetaProblem([
-        "S  ",
-    ])
+    metaproblem = Grid2DMetaProblem(
+        [
+            "S  ",
+        ]
+    )
     problem: Problem = next(iter(metaproblem.multi_goal_given()))
     bfs: SearchAlgorithm = BFS(problem)
 
@@ -24,22 +26,30 @@ def test_no_solution():
 
 def test_walk_all_directions():
     metaproblems = [
-        Grid2DMetaProblem([
-            "S G",
-        ]),
-        Grid2DMetaProblem([
-            "G S",
-        ]),
-        Grid2DMetaProblem([
-            "G",
-            " ",
-            "S",
-        ]),
-        Grid2DMetaProblem([
-            "S",
-            " ",
-            "G",
-        ]),
+        Grid2DMetaProblem(
+            [
+                "S G",
+            ]
+        ),
+        Grid2DMetaProblem(
+            [
+                "G S",
+            ]
+        ),
+        Grid2DMetaProblem(
+            [
+                "G",
+                " ",
+                "S",
+            ]
+        ),
+        Grid2DMetaProblem(
+            [
+                "S",
+                " ",
+                "G",
+            ]
+        ),
     ]
     for mp in metaproblems:
         problem: Problem = next(iter(mp.multi_goal_given()))

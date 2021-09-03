@@ -11,14 +11,16 @@ from search.space import Problem, Space
 
 
 def test_no_solution():
-    metaproblem = Grid2DMetaProblem([
-        "     ",
-        " ####",
-        "     ",
-        "#### ",
-        "     ",
-        "S    ",
-    ])
+    metaproblem = Grid2DMetaProblem(
+        [
+            "     ",
+            " ####",
+            "     ",
+            "#### ",
+            "     ",
+            "S    ",
+        ]
+    )
     problem: Problem = next(iter(metaproblem.multi_goal_given()))
     bfs: SearchAlgorithm = BFS(problem)
 
@@ -34,9 +36,11 @@ def test_no_solution():
 
 def test_expansion_order():
     length = 100
-    metaproblem = Grid2DMetaProblem([
-        "G" + " " * length + "S" + " " * length,
-    ])
+    metaproblem = Grid2DMetaProblem(
+        [
+            "G" + " " * length + "S" + " " * length,
+        ]
+    )
     problem: Problem = next(iter(metaproblem.multi_goal_given()))
     bfs: SearchAlgorithm = BFS(problem)
 

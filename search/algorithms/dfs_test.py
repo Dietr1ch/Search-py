@@ -7,14 +7,16 @@ from search.space import Problem, Space
 
 
 def test_no_solution():
-    metaproblem = Grid2DMetaProblem([
-        "     ",
-        " ####",
-        "     ",
-        "#### ",
-        "     ",
-        "S    ",
-    ])
+    metaproblem = Grid2DMetaProblem(
+        [
+            "     ",
+            " ####",
+            "     ",
+            "#### ",
+            "     ",
+            "S    ",
+        ]
+    )
     problem: Problem = next(iter(metaproblem.multi_goal_given()))
     dfs: SearchAlgorithm = DFS(problem)
 
@@ -36,12 +38,16 @@ def test_expansion_order():
     # deterministic.
     empty_space_str = "" + " " * length + "S" + " " * length
     metaproblems = [
-        Grid2DMetaProblem([
-            "G" + empty_space_str,
-        ]),
-        Grid2DMetaProblem([
-            empty_space_str + "G",
-        ]),
+        Grid2DMetaProblem(
+            [
+                "G" + empty_space_str,
+            ]
+        ),
+        Grid2DMetaProblem(
+            [
+                empty_space_str + "G",
+            ]
+        ),
     ]
 
     solutions = []
@@ -57,11 +63,13 @@ def test_expansion_order():
         path = goal_node.path(problem.space)
         assert path is not None
 
-        solutions.append({
-            "algorithm": dfs,
-            "goal_node": goal_node,
-            "path": path,
-        })
+        solutions.append(
+            {
+                "algorithm": dfs,
+                "goal_node": goal_node,
+                "path": path,
+            }
+        )
 
     lengths = [len(path) for _, _, path in solutions]
     if lengths[0] > lengths[1]:

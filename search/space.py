@@ -7,10 +7,10 @@ from enum import Enum
 from typing import Iterable, Set, Tuple
 
 
-class Space():
+class Space:
     """A generic search space."""
 
-    class State():
+    class State:
         """A state in the Search Space."""
 
         def __hash__(self):
@@ -24,8 +24,8 @@ class Space():
         def __eq__(self, other) -> bool:
             """Compares 2 states."""
             raise NotImplementedError(
-                "The '{}' State does not implement __eq__ yet".format(
-                    self.__class__))
+                "The '{}' State does not implement __eq__ yet".format(self.__class__)
+            )
 
     class Action(Enum):
         """A generic action."""
@@ -57,13 +57,16 @@ class Space():
         # Something is wrong, let's try to explain the current state.
         action_strs = [str(a) for a, _ in self.neighbors(state)]
         raise ValueError(
-            "Received an action that can't be performed at this State. Can't perform {} from {}. Can only perform {}".format(action, state, ", ".join(action_strs)))
+            "Received an action that can't be performed at this State. Can't perform {} from {}. Can only perform {}".format(
+                action, state, ", ".join(action_strs)
+            )
+        )
 
     def to_str(self, problem, state: State) -> str:
         """Formats a Space to a string. Not a problem over it."""
         raise NotImplementedError(
-            "The '{}' Space does not implement to_str yet".format(
-                self.__class__))
+            "The '{}' Space does not implement to_str yet".format(self.__class__)
+        )
 
 
 class RandomAccessSpace(Space):
@@ -74,7 +77,7 @@ class RandomAccessSpace(Space):
         raise NotImplementedError("")
 
 
-class Problem():
+class Problem:
     """A generic problem definition that uses a goal function."""
 
     def __init__(self, space: Space, starting_states: Set[Space.State]):
@@ -98,8 +101,7 @@ class Problem():
             unique_starting_state = next(iter(self.starting_states))
             return self.to_str(unique_starting_state)
 
-        problem_str = "There's {} starting states,\n".format(
-            len(self.starting_states))
+        problem_str = "There's {} starting states,\n".format(len(self.starting_states))
         for starting_state in self.starting_states:
             problem_str += self.to_str(starting_state)
             problem_str += "\n"

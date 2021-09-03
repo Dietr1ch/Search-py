@@ -31,7 +31,9 @@ def solve(algorithm_class, problem: Problem):
 
     if goal_node is None:
         return {
-            "summary": "No solution found for this problem after {} expansions".format(search_algorithm.expansions),
+            "summary": "No solution found for this problem after {} expansions".format(
+                search_algorithm.expansions
+            ),
             "cost": float("inf"),
             "length": float("inf"),
             "expansions": search_algorithm.expansions,
@@ -42,9 +44,8 @@ def solve(algorithm_class, problem: Problem):
 
     return {
         "summary": "Expanded {:-3} nodes in t:{:.2}ms to find: {}".format(
-            search_algorithm.expansions,
-            time_ms,
-            path),
+            search_algorithm.expansions, time_ms, path
+        ),
         "path": path,
         "cost": path.cost(),
         "length": len(path),
@@ -88,20 +89,26 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
                     continue
 
                 if ratio >= 1.5:
-                    color = 'red'
-                    attrs = ['bold']
+                    color = "red"
+                    attrs = ["bold"]
                 elif ratio >= 1.2:
-                    color = 'yellow'
-                    attrs = ['bold']
+                    color = "yellow"
+                    attrs = ["bold"]
                 elif ratio >= 1.1:
-                    color = 'white'
-                    attrs = ['bold']
-                print("    - Not the best on {}!! {} ({} vs {})".format(
-                    colored("{:12}".format(metric), color, attrs=attrs),
-                    colored("{:.2%}".format(solutions[a][metric] / best[metric]),
-                            color, attrs=attrs),
-                    solutions[a][metric],
-                    best[metric]))
+                    color = "white"
+                    attrs = ["bold"]
+                print(
+                    "    - Not the best on {}!! {} ({} vs {})".format(
+                        colored("{:12}".format(metric), color, attrs=attrs),
+                        colored(
+                            "{:.2%}".format(solutions[a][metric] / best[metric]),
+                            color,
+                            attrs=attrs,
+                        ),
+                        solutions[a][metric],
+                        best[metric],
+                    )
+                )
     print("")
     return solutions
 
@@ -109,35 +116,43 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
 def main():
     """A simple program solving an easy maze."""
     metaproblems = [
-        Grid2DMetaProblem([
-            "   G ",
-            " ####",
-            "     ",
-            "#### ",
-            "     ",
-            "S    ",
-        ]),
-        Grid2DMetaProblem([
-            "G          ",
-            "           ",
-            "########## ",
-            "           ",
-            "          G",
-            " ##########",
-            "           ",
-            "           ",
-            "########## ",
-            "           ",
-            "S          ",
-        ]),
+        Grid2DMetaProblem(
+            [
+                "   G ",
+                " ####",
+                "     ",
+                "#### ",
+                "     ",
+                "S    ",
+            ]
+        ),
+        Grid2DMetaProblem(
+            [
+                "G          ",
+                "           ",
+                "########## ",
+                "           ",
+                "          G",
+                " ##########",
+                "           ",
+                "           ",
+                "########## ",
+                "           ",
+                "S          ",
+            ]
+        ),
         # It can't get easier right?
-        Grid2DMetaProblem([
-            "G  S{:60}G".format(" "),
-        ]),
+        Grid2DMetaProblem(
+            [
+                "G  S{:60}G".format(" "),
+            ]
+        ),
         # What if there's no goal?
-        Grid2DMetaProblem([
-            "   S{:60} ".format(" "),
-        ]),
+        Grid2DMetaProblem(
+            [
+                "   S{:60} ".format(" "),
+            ]
+        ),
     ]
 
     problems = []
@@ -156,7 +171,6 @@ def main():
         random.seed(1)
         for _ in range(random_problems):
             problems.append(mp.simple_random())
-
 
     algorithms = [
         DFS,

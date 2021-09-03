@@ -14,7 +14,7 @@ from termcolor import colored
 from search.space import Space
 
 
-class Node():
+class Node:
     """A search Node. Maintains the problem state and the path that reached it.
 
     Members:
@@ -30,10 +30,9 @@ class Node():
     however, good cost-aware implementations will extend Node to cache it.
     """
 
-    def __init__(self,
-                 state: Space.State,
-                 action: Optional[Space.Action],
-                 parent: Optional[Node]):
+    def __init__(
+        self, state: Space.State, action: Optional[Space.Action], parent: Optional[Node]
+    ):
         self.state: Space.State = state
 
         self.action = action
@@ -50,11 +49,12 @@ class Node():
         if self.parent:
             parent_action = str(self.action)
             parent_state = str(self.parent.state)
-        return "Node[s={}, a={}, p.s={}]".format(self.state, parent_action,
-                                                 parent_state)
+        return "Node[s={}, a={}, p.s={}]".format(
+            self.state, parent_action, parent_state
+        )
 
 
-class Path():
+class Path:
     """A path in the Search Tree.
 
     Computes the full path on initialization to help free the Nodes.
@@ -132,13 +132,17 @@ class Path():
         return "Path[c:{}, l:{}, p:{} => {} => {}]".format(
             self.cost(),
             len(self),
-            colored(str(self.starting_state()), 'green', attrs=['bold']),
-            colored(" ".join([str(n) + str(a) for n, a in self.compressed_actions()]),
-                    'blue', attrs=['bold']),
-            colored(str(self.final_state()), 'yellow', attrs=['bold']))
+            colored(str(self.starting_state()), "green", attrs=["bold"]),
+            colored(
+                " ".join([str(n) + str(a) for n, a in self.compressed_actions()]),
+                "blue",
+                attrs=["bold"],
+            ),
+            colored(str(self.final_state()), "yellow", attrs=["bold"]),
+        )
 
 
-class SearchAlgorithm():
+class SearchAlgorithm:
     """A generic search algorithm.
 
     Members:
@@ -158,7 +162,7 @@ class SearchAlgorithm():
         self.expansions: int = 0
         self.time_ns: Optional[int] = None
 
-    class Open():
+    class Open:
         """A generic Open set.
 
         Ideally it should support:

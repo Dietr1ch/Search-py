@@ -28,6 +28,7 @@ in
       importmagic
       epc
       python-language-server
+      black
     ];
     checkPhase = ''
       autopep8 --aggressive --exit-code */.py **/.py

@@ -14,6 +14,7 @@ class BFS(SearchAlgorithm):
     Implements Open with a List and a set.
     It uses the base Node class as we don't need to extend it.
     """
+
     class Open(SearchAlgorithm.Open):
         """An Open set implementation using a Queue."""
 

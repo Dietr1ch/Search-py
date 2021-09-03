@@ -17,6 +17,7 @@ from termcolor import colored
 
 class Cell(Enum):
     """Cell contents."""
+
     EMPTY = " "
     START = "S"
     GOAL = "G"
@@ -50,6 +51,7 @@ class Grid2D(RandomAccessSpace):
 
     class Action(Space.Action, Enum):
         """Grid actions."""
+
         UP = "↑"
         DOWN = "↓"
         LEFT = "←"
@@ -81,7 +83,8 @@ class Grid2D(RandomAccessSpace):
         return self.grid[y][x]
 
     def adjacent_coordinates(
-            self, cell: Tuple[int, int]) -> Iterable[Tuple[Grid2D.Action, Tuple[int, int]]]:
+        self, cell: Tuple[int, int]
+    ) -> Iterable[Tuple[Grid2D.Action, Tuple[int, int]]]:
         """Generates the actions and resulting cells."""
         # pylint: disable=invalid-name
         x, y = cell
@@ -98,7 +101,8 @@ class Grid2D(RandomAccessSpace):
     # Space
     # -----
     def neighbors(
-            self, state: Grid2D.State) -> Iterable[Tuple[Grid2D.Action, Grid2D.State]]:
+        self, state: Grid2D.State
+    ) -> Iterable[Tuple[Grid2D.Action, Grid2D.State]]:
         """Generates the Actions and neighbor States."""
         # pylint: disable=invalid-name
         for a, cell in self.adjacent_coordinates(cell=state.agent_position):
@@ -117,32 +121,33 @@ class Grid2D(RandomAccessSpace):
         assert isinstance(state, Grid2D.State)
 
         space = problem.space
-        grid_str = ''
-        grid_str += colored(('    █' + ('█' * (space.W)) +
-                             '█\n'), 'green', attrs=['bold'])
+        grid_str = ""
+        grid_str += colored(
+            ("    █" + ("█" * (space.W)) + "█\n"), "green", attrs=["bold"]
+        )
 
         for y in range(space.H):
-            grid_str += colored("%3d " % y, 'white')
-            grid_str += colored("█", 'green', attrs=['bold'])
+            grid_str += colored("%3d " % y, "white")
+            grid_str += colored("█", "green", attrs=["bold"])
             for x in range(space.W):
                 char_state = copy.deepcopy(state)
                 char_state.agent_position = (x, y)
                 if problem.is_goal(char_state):
-                    grid_str += colored('G', 'yellow', attrs=['bold'])
+                    grid_str += colored("G", "yellow", attrs=["bold"])
                 elif char_state in problem.starting_states:
-                    grid_str += colored('S', 'white', attrs=['bold'])
+                    grid_str += colored("S", "white", attrs=["bold"])
                 elif space.is_wall(char_state.agent_position):
-                    grid_str += colored('█', 'green', attrs=['bold'])
+                    grid_str += colored("█", "green", attrs=["bold"])
                 else:
                     grid_str += " "
-            grid_str += colored('█', 'green', attrs=['bold']) + '\n'
+            grid_str += colored("█", "green", attrs=["bold"]) + "\n"
 
-        grid_str += colored(('    █' + ('█' * (space.W)) +
-                             '█\n'), 'green', attrs=['bold'])
+        grid_str += colored(
+            ("    █" + ("█" * (space.W)) + "█\n"), "green", attrs=["bold"]
+        )
 
         return grid_str
         pass
-
 
     # RandomAccessSpace
     # -----------------
@@ -153,10 +158,13 @@ class Grid2D(RandomAccessSpace):
 
 class Grid2DProblem(Problem):
     """A simple implementation with a set of goal states."""
-    def __init__(self,
-                 space: Grid2D,
-                 starting_states: Set[Grid2D.State],
-                 goals: Set[Tuple[int, int]]):
+
+    def __init__(
+        self,
+        space: Grid2D,
+        starting_states: Set[Grid2D.State],
+        goals: Set[Tuple[int, int]],
+    ):
         super().__init__(space, starting_states)
         self.goals = goals
 
@@ -209,9 +217,7 @@ class Grid2DMetaProblem:
 
     def multi_start_and_goal_given(self):
         """Generates problems with a all starts and goals."""
-        return Grid2DProblem(self.space,
-                   set(self.starts),
-                   set(self.goals))
+        return Grid2DProblem(self.space, set(self.starts), set(self.goals))
 
     def simple_random(self):
         """Creates a random problem with a single start and goal."""
@@ -219,4 +225,3 @@ class Grid2DMetaProblem:
         goal_positions = set([self.space.random_state().agent_position])
 
         return Grid2DProblem(self.space, starting_states, goal_positions)
-
