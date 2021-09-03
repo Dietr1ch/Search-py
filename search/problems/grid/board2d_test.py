@@ -2,15 +2,15 @@ from typing import List, Optional
 
 from search.algorithms.bfs import BFS
 from search.algorithms.search import Node, SearchAlgorithm
-from search.problems.grid.board2d import Board2D
-from search.space import Problem, SimpleProblem, Space
+from search.problems.grid.board2d import Grid2D, Grid2DMetaProblem
+from search.space import Problem, Space
 
 
 def test_no_solution():
-    space: Space = Board2D([
+    metaproblem = Grid2DMetaProblem([
         "S  ",
     ])
-    problem: Problem = next(iter(SimpleProblem.multi_goal_given(space=space)))
+    problem: Problem = next(iter(metaproblem.multi_goal_given()))
     bfs: SearchAlgorithm = BFS(problem)
 
     # Search
@@ -23,26 +23,26 @@ def test_no_solution():
 
 
 def test_walk_all_directions():
-    spaces: List[Space] = [
-        Board2D([
+    metaproblems = [
+        Grid2DMetaProblem([
             "S G",
         ]),
-        Board2D([
+        Grid2DMetaProblem([
             "G S",
         ]),
-        Board2D([
+        Grid2DMetaProblem([
             "G",
             " ",
             "S",
         ]),
-        Board2D([
+        Grid2DMetaProblem([
             "S",
             " ",
             "G",
         ]),
     ]
-    for space in spaces:
-        problem: Problem = next(iter(SimpleProblem.multi_goal_given(space=space)))
+    for mp in metaproblems:
+        problem: Problem = next(iter(mp.multi_goal_given()))
         bfs: SearchAlgorithm = BFS(problem)
 
         # Search
@@ -55,7 +55,7 @@ def test_walk_all_directions():
         assert bfs.expansions == 3 - 1
 
         # We can get its path
-        path = goal_node.path(space)
+        path = goal_node.path(problem.space)
         assert path is not None
 
         # We can get its path

@@ -12,9 +12,8 @@ from termcolor import colored
 from search.algorithms.bfs import BFS
 from search.algorithms.dfs import DFS
 from search.algorithms.search import SearchAlgorithm
-from search.problems.grid.board2d import Board2D
-from search.space import (PredefinedSpace, Problem, RandomAccessSpace,
-                          SimpleProblem, Space)
+from search.problems.grid.board2d import Grid2D, Grid2DMetaProblem
+from search.space import Problem
 
 
 def solve(algorithm_class, problem: Problem):
@@ -23,8 +22,13 @@ def solve(algorithm_class, problem: Problem):
     Returns: Dictionary with a summary and key metrics.
     """
     search_algorithm: SearchAlgorithm = algorithm_class(problem)
+    assert search_algorithm is not None
+
     goal_node = search_algorithm.search()
+
+    assert search_algorithm.time_ns is not None
     time_ms = (search_algorithm.time_ns) / 1_000_000.0
+
     if goal_node is None:
         return {
             "summary": "No solution found for this problem after {} expansions".format(search_algorithm.expansions),
@@ -104,8 +108,8 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
 
 def main():
     """A simple program solving an easy maze."""
-    spaces: List[Space] = [
-        Board2D([
+    metaproblems = [
+        Grid2DMetaProblem([
             "   G ",
             " ####",
             "     ",
@@ -113,7 +117,7 @@ def main():
             "     ",
             "S    ",
         ]),
-        Board2D([
+        Grid2DMetaProblem([
             "G          ",
             "           ",
             "########## ",
@@ -127,33 +131,32 @@ def main():
             "S          ",
         ]),
         # It can't get easier right?
-        Board2D([
+        Grid2DMetaProblem([
             "G  S{:60}G".format(" "),
         ]),
         # What if there's no goal?
-        Board2D([
+        Grid2DMetaProblem([
             "   S{:60} ".format(" "),
         ]),
     ]
 
-    # pylint: disable=invalid-name
-
     problems = []
     random_problems = 1
-    for space in spaces:
-        if isinstance(space, PredefinedSpace):
-            # Add all the simple given problems
-            for p in SimpleProblem.simple_given(space=space):
-                problems.append(p)
 
-            # Add all the multi-goal given problems
-            for p in SimpleProblem.multi_goal_given(space=space):
-                problems.append(p)
+    # pylint: disable=invalid-name
+    for mp in metaproblems:
+        # Add all the simple given problems
+        for p in mp.simple_given():
+            problems.append(p)
 
-        if isinstance(space, RandomAccessSpace):
-            random.seed(1)
-            for _ in range(random_problems):
-                problems.append(SimpleProblem.simple_random(space))
+        # Add all the multi-goal given problems
+        for p in mp.multi_goal_given():
+            problems.append(p)
+
+        random.seed(1)
+        for _ in range(random_problems):
+            problems.append(mp.simple_random())
+
 
     algorithms = [
         DFS,

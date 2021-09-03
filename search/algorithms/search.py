@@ -48,9 +48,9 @@ class Node():
         parent_action = "ø"
         parent_state = "ø"
         if self.parent:
-            parent_action = self.action
-            parent_state = self.parent.state
-        return "Node[s={}, a={}, p.s={}]".format(self.state, self.action,
+            parent_action = str(self.action)
+            parent_state = str(self.parent.state)
+        return "Node[s={}, a={}, p.s={}]".format(self.state, parent_action,
                                                  parent_state)
 
 

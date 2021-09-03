@@ -1,13 +1,17 @@
+"""
+Tests for the Breadth-first Search algorithm.
+"""
+
 from typing import Optional
 
 from search.algorithms.bfs import BFS
 from search.algorithms.search import Node, SearchAlgorithm
-from search.problems.grid.board2d import Board2D
-from search.space import Problem, SimpleProblem, Space
+from search.problems.grid.board2d import Grid2D, Grid2DMetaProblem
+from search.space import Problem, Space
 
 
 def test_no_solution():
-    space: Space = Board2D([
+    metaproblem = Grid2DMetaProblem([
         "     ",
         " ####",
         "     ",
@@ -15,7 +19,7 @@ def test_no_solution():
         "     ",
         "S    ",
     ])
-    problem: Problem = next(iter(SimpleProblem.multi_goal_given(space=space)))
+    problem: Problem = next(iter(metaproblem.multi_goal_given()))
     bfs: SearchAlgorithm = BFS(problem)
 
     # Search
@@ -30,16 +34,16 @@ def test_no_solution():
 
 def test_expansion_order():
     length = 100
-    space: Space = Board2D([
+    metaproblem = Grid2DMetaProblem([
         "G" + " " * length + "S" + " " * length,
     ])
-    problem: Problem = next(iter(SimpleProblem.multi_goal_given(space=space)))
+    problem: Problem = next(iter(metaproblem.multi_goal_given()))
     bfs: SearchAlgorithm = BFS(problem)
 
     # Search
     goal_node: Optional[Node] = bfs.search()
 
     assert goal_node is not None
-    assert goal_node.path(space) is not None
+    assert goal_node.path(problem.space) is not None
     assert 2 * length < bfs.expansions <= 2 * (length + 1)
     assert 100_000 < bfs.time_ns < 100_000_000
