@@ -11,7 +11,7 @@ from typing import Iterable, List, Optional, Tuple
 
 from termcolor import colored
 
-from search.space import Space
+from search.space import Heuristic, Space
 
 
 class Node:
@@ -199,8 +199,7 @@ class SearchAlgorithm:
         """Returns the container to use for the Open set."""
         raise NotImplementedError("")
 
-    @classmethod
-    def create_starting_node(cls, state: Space.State) -> Node:
+    def create_starting_node(self, state: Space.State) -> Node:
         """Creates an Starting Node."""
         raise NotImplementedError("")
 
@@ -238,3 +237,14 @@ class SearchAlgorithm:
         self.time_ns = time.perf_counter_ns() - self.time_ns
 
         return solution
+
+
+class HeuristicSearchAlgorithm(SearchAlgorithm):
+    """A generic heuristic search algorithm."""
+
+    def __init__(self, problem, heuristic: Heuristic):
+        assert heuristic.problem == problem
+
+        super().__init__(problem)
+        # pylint: disable=invalid-name
+        self.h = heuristic

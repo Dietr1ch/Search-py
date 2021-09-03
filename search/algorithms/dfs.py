@@ -55,8 +55,8 @@ class DFS(SearchAlgorithm):
         """Returns the container to use for the Open set."""
         return DFS.Open()
 
-    @classmethod
-    def create_starting_node(cls, state: Space.State) -> Node:
+    # pylint: no-self-argument
+    def create_starting_node(self, state: Space.State) -> Node:
         """Create an Starting Node."""
         return Node(state, action=None, parent=None)
 

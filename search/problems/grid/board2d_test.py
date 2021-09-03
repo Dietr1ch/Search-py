@@ -1,9 +1,11 @@
-from typing import List, Optional
+from typing import Optional
 
 from search.algorithms.bfs import BFS
 from search.algorithms.search import Node, SearchAlgorithm
-from search.problems.grid.board2d import Grid2D, Grid2DMetaProblem
-from search.space import Problem, Space
+from search.problems.grid.board2d import Grid2DMetaProblem
+from search.space import Heuristic, Problem
+
+INFINITY = float("inf")
 
 
 def test_no_solution():
@@ -51,6 +53,8 @@ def test_walk_all_directions():
             ]
         ),
     ]
+
+    # pylint: disable=invalid-name
     for mp in metaproblems:
         problem: Problem = next(iter(mp.multi_goal_given()))
         bfs: SearchAlgorithm = BFS(problem)
@@ -70,3 +74,57 @@ def test_walk_all_directions():
 
         # We can get its path
         assert path.cost() == 2
+
+
+def test_heuristic_no_goal():
+    metaproblem = Grid2DMetaProblem(
+        [
+            "S  ",
+        ]
+    )
+    problem: Problem = next(iter(metaproblem.multi_goal_given()))
+
+    assert len(problem.starting_states) == 1
+    for start in problem.starting_states:
+        h_values = [h(start) for h in problem.all_heuristics()]
+        assert h_values == [INFINITY, INFINITY, 1, 0]
+
+
+def test_heuristic_single_goal():
+    metaproblem = Grid2DMetaProblem(
+        [
+            "S G",
+        ]
+    )
+    problem: Problem = next(iter(metaproblem.multi_goal_given()))
+
+    assert len(problem.starting_states) == 1
+    for start in problem.starting_states:
+        h_values = [h(start) for h in problem.all_heuristics()]
+        assert h_values == [2, 2, 1, 0]
+
+
+def test_heuristic_multi_goal():
+    metaproblems = [
+        Grid2DMetaProblem(
+            [
+                "                 G",
+                " S                ",
+                "G                 ",
+            ]
+        ),
+        Grid2DMetaProblem(
+            [
+                "                 G",
+                "                S ",
+                "G                 ",
+            ]
+        ),
+    ]
+
+    for metaproblem in metaproblems:
+        for problem in metaproblem.multi_goal_given():
+            assert len(problem.starting_states) == 1
+            for start in problem.starting_states:
+                h_values = [h(start) for h in problem.all_heuristics()]
+                assert h_values == [2, 1, 1, 0]

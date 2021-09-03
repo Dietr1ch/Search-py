@@ -8,11 +8,17 @@ from __future__ import annotations
 import copy
 import random
 from enum import Enum
-from typing import Iterable, List, Tuple
+from typing import Iterable, List, Set, Tuple
 
 import numpy as np
-from search.space import Problem, RandomAccessSpace, Space
+from search.space import Heuristic, Problem, RandomAccessSpace, Space
 from termcolor import colored
+
+INFINITY = float("inf")
+
+
+def manhattan_distance_2d(a, b):
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
 class Cell(Enum):
@@ -168,9 +174,65 @@ class Grid2DProblem(Problem):
         super().__init__(space, starting_states)
         self.goals = goals
 
-    def is_goal(self, state: Space.State) -> bool:
+    def is_goal(self, state: Grid2D.State) -> bool:
         """Checks if a state is a goal for this Problem."""
         return state.agent_position in self.goals
+
+    def all_heuristics(self) -> List[Heuristic]:
+        """Returns a sorted list of heuristic functions for a given problem.
+
+        The heuristics will be sorted in decreasing quality (and likely cost).
+        """
+        return [
+            Grid2DManhattanDistance(self),
+            Grid2DSingleDimensionDistance(self),
+            Grid2DDiscreteMetric(self),
+            Heuristic(self),
+        ]
+
+
+class Grid2DDiscreteMetric(Heuristic):
+    """The Discrete metric, either 0 or 1."""
+
+    def __init__(self, problem):
+        super().__init__(problem)
+
+    def __call__(self, state: Grid2D.State):
+        """The estimated cost of reaching the goal."""
+        if state.agent_position in self.problem.goals:
+            return 0
+        return 1
+
+
+class Grid2DSingleDimensionDistance(Heuristic):
+    """The Manhattan distance."""
+
+    def __init__(self, problem):
+        super().__init__(problem)
+
+    def __call__(self, state: Grid2D.State):
+        """The estimated cost of reaching the goal."""
+        if self.problem.goals:
+            pos = state.agent_position
+            return max(
+                min([abs(pos[0] - g[0]) for g in self.problem.goals]),
+                min([abs(pos[1] - g[1]) for g in self.problem.goals]),
+            )
+        return INFINITY
+
+
+class Grid2DManhattanDistance(Heuristic):
+    """The Manhattan distance."""
+
+    def __init__(self, problem):
+        super().__init__(problem)
+
+    def __call__(self, state: Grid2D.State):
+        """The estimated cost of reaching the goal."""
+        if self.problem.goals:
+            pos = state.agent_position
+            return min([manhattan_distance_2d(pos, g) for g in self.problem.goals])
+        return INFINITY
 
 
 class Grid2DMetaProblem:

@@ -12,7 +12,7 @@ from termcolor import colored
 from search.algorithms.bfs import BFS
 from search.algorithms.dfs import DFS
 from search.algorithms.search import SearchAlgorithm
-from search.problems.grid.board2d import Grid2D, Grid2DMetaProblem
+from search.problems.grid.board2d import Grid2DMetaProblem
 from search.space import Problem
 
 

@@ -4,7 +4,7 @@ Definitions for a Search Space and Search Problems over them.
 
 import copy
 from enum import Enum
-from typing import Iterable, Set, Tuple
+from typing import Iterable, List, Set, Tuple
 
 
 class Space:
@@ -68,6 +68,14 @@ class Space:
             "The '{}' Space does not implement to_str yet".format(self.__class__)
         )
 
+    @classmethod
+    def heuristics(cls, problem):
+        """Returns a sorted list of heuristic functions for a given problem.
+
+        The heuristics will be sorted in decreasing quality (and likely cost).
+        """
+        return []
+
 
 class RandomAccessSpace(Space):
     """A generic Search Space where random States can be generated."""
@@ -106,3 +114,33 @@ class Problem:
             problem_str += self.to_str(starting_state)
             problem_str += "\n"
         return problem_str
+
+    def all_heuristics(self):
+        """Returns a sorted list of heuristic functions for a given problem.
+
+        The heuristics will be sorted in decreasing quality (and likely cost).
+        """
+        return []
+
+
+class Heuristic:
+    """A heuristic function for a Problem.
+
+    This allows having many functions for a single problem.
+    """
+
+    # pylint: disable=invalid-name,no-self-use,unused-argument
+    def __init__(self, problem):
+        """Creates the Heuristic function for a specific problem.
+
+        Making this an object allows precomputing instance-specific values.
+        """
+        self.problem = problem
+
+    def __str__(self) -> str:
+        """The name of this heuristic."""
+        return self.__class__.__name__
+
+    def __call__(self, state: Space.State):
+        """The estimated cost of reaching the goal."""
+        return 0

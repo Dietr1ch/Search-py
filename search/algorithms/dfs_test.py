@@ -2,8 +2,8 @@ from typing import Optional
 
 from search.algorithms.dfs import DFS
 from search.algorithms.search import Node, SearchAlgorithm
-from search.problems.grid.board2d import Grid2D, Grid2DMetaProblem
-from search.space import Problem, Space
+from search.problems.grid.board2d import Grid2DMetaProblem
+from search.space import Problem
 
 
 def test_no_solution():
@@ -51,6 +51,8 @@ def test_expansion_order():
     ]
 
     solutions = []
+
+    # pylint: disable=invalid-name
     for mp in metaproblems:
         problem: Problem = next(iter(mp.multi_goal_given()))
         dfs: SearchAlgorithm = DFS(problem)
