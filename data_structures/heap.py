@@ -4,6 +4,25 @@ Wrapper for heapq
 import heapq
 from typing import Any, List, Tuple
 
+# A heap is a tree-like structure where every subtree's root has a better score
+# than all the other nodes in the subtree.
+#
+# This is often implemented with an array that's traversed in a non-linear way.
+# These are the indices we assign to each node.
+
+#                           0
+#              1                         2
+#       3            4            5             6
+#   7      8      9     10    11     12     13     14
+# 15 16  17 18  19 20  21 22 23 24  25
+#
+# The last level will often be incomplete
+#
+# You can easily go up, down-left, and down-right from any index with,
+#   - Up: (i-1)//2
+#   - DL: (2*i) + 1
+#   - DR: 2(i+1)
+
 
 class Heap:
     """A (min) heap."""
