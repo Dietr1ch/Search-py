@@ -11,6 +11,7 @@ from termcolor import colored
 
 from search.algorithms.bfs import BFS
 from search.algorithms.dfs import DFS
+from search.algorithms.dijkstra import Dijkstra
 from search.algorithms.search import SearchAlgorithm
 from search.problems.grid.board2d import Grid2DMetaProblem
 from search.space import Problem
@@ -29,30 +30,37 @@ def solve(algorithm_class, problem: Problem):
     assert search_algorithm.time_ns is not None
     time_ms = (search_algorithm.time_ns) / 1_000_000.0
 
+    stats = {
+        "summary": "No solution found for this problem after {} expansions".format(
+            search_algorithm.expansions
+        ),
+        "cost": float("inf"),
+        "length": float("inf"),
+        "expansions": search_algorithm.expansions,
+        "states_generated": search_algorithm.states_generated,
+        "states_reached": search_algorithm.states_reached,
+        "nodes_created": search_algorithm.nodes_created,
+        "nodes_updated": search_algorithm.nodes_updated,
+        "time_ms": time_ms,
+    }
     if goal_node is None:
-        return {
-            "summary": "No solution found for this problem after {} expansions".format(
-                search_algorithm.expansions
-            ),
-            "cost": float("inf"),
-            "length": float("inf"),
-            "expansions": search_algorithm.expansions,
-            "time_ms": time_ms,
-        }
+        stats[
+            "summary"
+        ] = "No solution found for this problem after {} expansions".format(
+            search_algorithm.expansions
+        )
+        return stats
 
     path = goal_node.path(problem.space)
 
-    return {
-        "summary": "Expanded {:-3} nodes in t:{:.2}ms to find: {}".format(
-            search_algorithm.expansions, time_ms, path
-        ),
-        "path": path,
-        "cost": path.cost(),
-        "length": len(path),
-        "expansions": search_algorithm.expansions,
-        "time_ms": time_ms,
-        "actions": path.actions(),
-    }
+    stats["summary"] = "Expanded {:-3} nodes in t:{:.2}ms to find: {}".format(
+        search_algorithm.expansions, time_ms, path
+    )
+    stats["path"] = path
+    stats["cost"] = path.cost()
+    stats["length"] = len(path)
+    stats["actions"] = path.actions()
+    return stats
 
 
 def compare(algorithms: List[SearchAlgorithm], problem: Problem):
@@ -68,6 +76,10 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
         "cost": float("inf"),
         "length": float("inf"),
         "expansions": float("inf"),
+        "states_generated": float("inf"),
+        "states_reached": float("inf"),
+        "nodes_created": float("inf"),
+        "nodes_updated": float("inf"),
         "time_ms": float("inf"),
     }
     metrics = list(best.keys())
@@ -175,6 +187,7 @@ def main():
     algorithms = [
         DFS,
         BFS,
+        Dijkstra,
     ]
 
     for p in problems:

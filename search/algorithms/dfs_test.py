@@ -60,7 +60,6 @@ def test_expansion_order():
         # Search
         goal_node: Optional[Node] = dfs.search()
         assert goal_node is not None
-        assert goal_node is not None
 
         path = goal_node.path(problem.space)
         assert path is not None

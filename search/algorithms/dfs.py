@@ -58,6 +58,7 @@ class DFS(SearchAlgorithm):
     # pylint: no-self-argument
     def create_starting_node(self, state: Space.State) -> Node:
         """Create an Starting Node."""
+        self.nodes_created += 1
         return Node(state, action=None, parent=None)
 
     def reach(self, state: Space.State, action: Space.Action, parent: Node):
@@ -67,4 +68,5 @@ class DFS(SearchAlgorithm):
             # as we don't have a way of telling which one is better.
             return
 
+        self.nodes_created += 1
         self.open.insert(Node(state, action, parent))

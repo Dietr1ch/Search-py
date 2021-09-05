@@ -21,8 +21,10 @@ class Space:
             """The string representation of this state."""
             raise NotImplementedError("")
 
-        def __eq__(self, other) -> bool:
+        def __eq__(self, other: object) -> bool:
             """Compares 2 states."""
+            if not isinstance(other, Space.State):
+                return NotImplemented
             raise NotImplementedError(
                 "The '{}' State does not implement __eq__ yet".format(self.__class__)
             )

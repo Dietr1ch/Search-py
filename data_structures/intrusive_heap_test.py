@@ -8,7 +8,8 @@ class TestNode(IntrusiveHeap.Node):
         IntrusiveHeap.Node.__init__(self)
         self.key = key
 
-    def update_key(self, new_key):
+    def improve_key(self, new_key):
+        """Makes the key for a node better."""
         assert new_key < self.key
         self.key = new_key
 
@@ -65,7 +66,7 @@ def test_update():
     (b_index, _) = heap._slow_find(b)
     assert b._heap_index == b_index
     assert b_index == 1
-    b.update_key("0")
+    b.improve_key("0")
     heap.sync_improvement(b)
 
     assert heap.peek() == b
@@ -77,7 +78,7 @@ def test_update():
     assert len(heap) == 0
 
 
-def test_ordered_updates():
+def test_sort_nodes():
     random.seed(1)
 
     nodes = [TestNode((i * i % 7)) for i in range(100)]

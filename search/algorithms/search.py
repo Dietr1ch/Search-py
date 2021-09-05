@@ -83,7 +83,9 @@ class Path:
         current_state = copy.deepcopy(self.start)
         self.path_cost = 0
         for action in self.path:
-            self.path_cost += action.cost(current_state)
+            action_cost = action.cost(current_state)
+            assert action_cost >= 0
+            self.path_cost += action_cost
             current_state = space.execute(current_state, action)
         assert current_state == self.end
 
@@ -160,6 +162,10 @@ class SearchAlgorithm:
 
         # Statistics
         self.expansions: int = 0
+        self.states_generated: int = 0
+        self.states_reached: int = 0
+        self.nodes_created: int = 0
+        self.nodes_updated: int = 0
         self.time_ns: Optional[int] = None
 
     class Open:
@@ -222,10 +228,12 @@ class SearchAlgorithm:
             self.expansions += 1
             self.closed.add(node.state)
             for action, state in self.problem.space.neighbors(node.state):
+                self.states_generated += 1
                 if state in self.closed:
                     # Déjà vu, we reached an expanded state.
                     continue  # Not falling for this (again?).
 
+                self.states_reached += 1
                 self.reach(state, action, parent=node)
 
         return None
