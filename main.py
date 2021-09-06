@@ -14,6 +14,7 @@ from search.algorithms.dfs import DFS
 from search.algorithms.dijkstra import Dijkstra
 from search.algorithms.search import SearchAlgorithm
 from search.problems.grid.board2d import Grid2DMetaProblem
+from search.problems.grid.bomb import Bombs2DMetaProblem
 from search.space import Problem
 
 
@@ -90,11 +91,26 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
             if solutions[a][metric] < best[metric]:
                 best[metric] = solutions[a][metric]
 
-    for a in solutions:
-        print("  * {:20}: {}".format(a.name(), solutions[a]["summary"]))
+    metrics.remove("cost")
+    for a, solution in solutions.items():
+        print("  * {:20}: {}".format(a.name(), solution["summary"]))
+        if solution["cost"] > best["cost"]:
+            print(
+                "    -",
+                colored("Sub-optimal!!", "red", attrs=[]),
+                " {} ({} vs {})".format(
+                    colored(
+                        "{:.2%}".format(solution["cost"] / best["cost"]),
+                        "red",
+                        attrs=["bold"],
+                    ),
+                    solution["cost"],
+                    best["cost"],
+                ),
+            )
         for metric in metrics:
-            if solutions[a][metric] > best[metric]:
-                ratio = solutions[a][metric] / best[metric]
+            if solution[metric] > best[metric]:
+                ratio = solution[metric] / best[metric]
                 color = None
                 attrs = []
                 if ratio < 1.04:
@@ -113,11 +129,11 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
                     "    - Not the best on {}!! {} ({} vs {})".format(
                         colored("{:12}".format(metric), color, attrs=attrs),
                         colored(
-                            "{:.2%}".format(solutions[a][metric] / best[metric]),
+                            "{:.2%}".format(solution[metric] / best[metric]),
                             color,
                             attrs=attrs,
                         ),
-                        solutions[a][metric],
+                        solution[metric],
                         best[metric],
                     )
                 )
@@ -164,6 +180,24 @@ def main():
             [
                 "   S{:60} ".format(" "),
             ]
+        ),
+        Bombs2DMetaProblem(
+            [
+                "  G",
+                "###",
+                "B S",
+            ],
+            starting_bombs=0,
+        ),
+        Bombs2DMetaProblem(
+            [
+                "G    ",
+                "#####",
+                "    B",
+                "S    ",
+                "B    ",
+            ],
+            starting_bombs=0,
         ),
     ]
 
