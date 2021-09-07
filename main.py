@@ -7,6 +7,7 @@ A small binary showcasing the search library
 import random
 from typing import List
 
+import numpy as np
 from termcolor import colored
 
 from search.algorithms.bfs import BFS
@@ -15,6 +16,7 @@ from search.algorithms.dijkstra import Dijkstra
 from search.algorithms.search import SearchAlgorithm
 from search.problems.grid.board2d import Grid2DMetaProblem
 from search.problems.grid.bomb import Bombs2DMetaProblem
+from search.problems.nm_puzzle import NMPuzzleMetaProblem
 from search.space import Problem
 
 
@@ -198,6 +200,34 @@ def main():
                 "B    ",
             ],
             starting_bombs=0,
+        ),
+        # NOTE(ddaroch): The puzzles from these states to random goals might
+        # be unexpected.
+        NMPuzzleMetaProblem(
+            np.array(
+                [
+                    [1, 2, 0],
+                ]
+            )
+        ),
+        NMPuzzleMetaProblem(
+            np.array(
+                [
+                    [0, 1, 2],
+                    [3, 4, 5],
+                    [8, 6, 7],
+                ]
+            )
+        ),
+        NMPuzzleMetaProblem(
+            np.array(
+                [
+                    [11, 1, 2],
+                    [0, 4, 5],
+                    [3, 7, 8],
+                    [6, 9, 10],
+                ]
+            )
         ),
     ]
 

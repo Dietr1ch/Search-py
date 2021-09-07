@@ -160,6 +160,8 @@ class SearchAlgorithm:
         self.open = self.create_open()
         self.closed = set()
 
+        # Limits
+        self.expansion_limit = 10_000  # Really conservative
         # Statistics
         self.expansions: int = 0
         self.states_generated: int = 0
@@ -224,8 +226,11 @@ class SearchAlgorithm:
             if self.problem.is_goal(node.state):
                 return node
 
-            # Expand the node and consider all its neighboring states.
             self.expansions += 1
+            if self.expansions > self.expansion_limit:
+                print(self, ": giving up...")
+                return None
+            # Expand the node and consider all its neighboring states.
             self.closed.add(node.state)
             for action, state in self.problem.space.neighbors(node.state):
                 self.states_generated += 1
