@@ -23,6 +23,8 @@ A collection of search algorithms for teaching and experimenting.
       - [[./search/algorithms/bfs.py][bfs.py]]: ~BFS(SearchAlgorithm), BFS.Open(SearchAlgorithm.Open)~
       - [[./search/algorithms/dijkstra.py][dijkstra.py]]: ~Dijkstra(SearchAlgorithm), Dijkstra.Open(SearchAlgorithm.Open)~
 ***** ~problems~
+      - [[./search/problems/nm_puzzle.py][nm_puzzle.py]]: ~class NMPuzzle(Space, RandomAccessSpace)~
 ****** ~grid~
-       - [[./search/problems/grid/board2d.py][board2d.py]]: ~class Board2D(Space, PredefinedSpace, RandomAccessSpace)~
+       -[[./search/problems/grid/board2d.py][board2d.py]]: ~class Board2D(Space, RandomAccessSpace)~
+       -[[./search/problems/grid/bomb.py][bomb.py]]: ~class Bombs2D(Space, RandomAccessSpace)~
     - [[./main.py][main.py]]: Has a super simple benchmark.
