@@ -161,7 +161,7 @@ class SearchAlgorithm:
         self.closed = set()
 
         # Limits
-        self.expansion_limit = 10_000  # Really conservative
+        self.expansion_limit = 2_500  # Tight as we only have easy problems
         # Statistics
         self.expansions: int = 0
         self.states_generated: int = 0
