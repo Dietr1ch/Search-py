@@ -4,7 +4,7 @@ Definitions for a Search Space and Search Problems over them.
 
 import copy
 from enum import Enum
-from typing import Iterable, List, Set, Tuple
+from typing import Iterable, List, Sequence, Tuple
 
 
 class Space:
@@ -90,7 +90,7 @@ class RandomAccessSpace(Space):
 class Problem:
     """A generic problem definition that uses a goal function."""
 
-    def __init__(self, space: Space, starting_states: Set[Space.State]):
+    def __init__(self, space: Space, starting_states: Sequence[Space.State]):
         self.space = space
         self.starting_states = starting_states
 

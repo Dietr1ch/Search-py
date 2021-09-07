@@ -8,9 +8,9 @@ from __future__ import annotations
 import copy
 import random
 from enum import Enum
-from typing import Iterable, List, Set, Tuple
+from typing import Iterable, List, Sequence, Set, Tuple
 
-import numpy as np
+import numpy as np  # type: ignore
 from search.space import Heuristic, Problem, RandomAccessSpace, Space
 from termcolor import colored
 
@@ -253,12 +253,16 @@ class Bombs2D(RandomAccessSpace):
 
         space = problem.space
         grid_str = ""
-        grid_str += "Bombs: " + colored(state.bombs, "red", attrs=["bold"]) + "\n"
+        grid_str += "Bombs: " + colored(str(state.bombs), "red", attrs=["bold"]) + "\n"
         grid_str += colored(
             ("    █" + ("█" * (space.W)) + "█\n"), "green", attrs=["bold"]
         )
 
-        starting_positions = [s.agent_position for s in problem.starting_states]
+        starting_positions = []
+        for starting_state in problem.starting_states:
+            assert isinstance(starting_state, Bombs2D.State)
+            starting_positions.append(starting_state.agent_position)
+
         for y in range(space.H):
             grid_str += colored("%3d " % y, "white")
             grid_str += colored("█", "green", attrs=["bold"])
@@ -297,14 +301,17 @@ class Bombs2DProblem(Problem):
     def __init__(
         self,
         space: Bombs2D,
-        starting_states: Set[Bombs2D.State],
+        starting_states: Sequence[Bombs2D.State],
         goals: Set[Tuple[int, int]],
     ):
         super().__init__(space, starting_states)
         self.goals = goals
 
-    def is_goal(self, state: Bombs2D.State) -> bool:
+    def is_goal(self, state: Space.State) -> bool:
         """Checks if a state is a goal for this Problem."""
+        if not isinstance(state, Bombs2D.State):
+            raise TypeError("Only Bombs2D.State is supported")
+
         return state.agent_position in self.goals
 
     def all_heuristics(self) -> List[Heuristic]:
@@ -326,8 +333,11 @@ class Bombs2DDiscreteMetric(Heuristic):
     def __init__(self, problem):
         super().__init__(problem)
 
-    def __call__(self, state: Bombs2D.State):
+    def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
+        if not isinstance(state, Bombs2D.State):
+            raise TypeError("Only Bombs2D.State is supported")
+
         if state.agent_position in self.problem.goals:
             return 0
         return 1
@@ -339,8 +349,11 @@ class Bombs2DSingleDimensionDistance(Heuristic):
     def __init__(self, problem):
         super().__init__(problem)
 
-    def __call__(self, state: Bombs2D.State):
+    def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
+        if not isinstance(state, Bombs2D.State):
+            raise TypeError("Only Bombs2D.State is supported")
+
         if self.problem.goals:
             pos = state.agent_position
             return max(
@@ -356,8 +369,11 @@ class Bombs2DManhattanDistance(Heuristic):
     def __init__(self, problem):
         super().__init__(problem)
 
-    def __call__(self, state: Bombs2D.State):
+    def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
+        if not isinstance(state, Bombs2D.State):
+            raise TypeError("Only Bombs2D.State is supported")
+
         if self.problem.goals:
             pos = state.agent_position
             return min([manhattan_distance_2d(pos, g) for g in self.problem.goals])
@@ -397,7 +413,7 @@ class Bombs2DMetaProblem:
                     self.goal_positions.append(position)
 
         self.space = Bombs2D(grid)
-        self.starting_states: List[Bombs2D] = []
+        self.starting_states: List[Bombs2D.State] = []
         for start_position in start_positions:
             self.starting_states.append(
                 Bombs2D.State(

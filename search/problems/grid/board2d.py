@@ -8,9 +8,9 @@ from __future__ import annotations
 import copy
 import random
 from enum import Enum
-from typing import Iterable, List, Set, Tuple
+from typing import Iterable, List, Sequence, Set, Tuple
 
-import numpy as np
+import numpy as np  # type: ignore
 from search.space import Heuristic, Problem, RandomAccessSpace, Space
 from termcolor import colored
 
@@ -51,8 +51,11 @@ class Grid2D(RandomAccessSpace):
             """The string representation of this state."""
             return "Grid2d.State[{}]".format(self.agent_position)
 
-        def __eq__(self, other: Grid2D.State) -> bool:
+        def __eq__(self, other: object) -> bool:
             """Compares 2 states."""
+            if not isinstance(other, Grid2D.State):
+                return NotImplemented
+
             return self.agent_position == other.agent_position
 
     class Action(Space.Action, Enum):
@@ -107,9 +110,12 @@ class Grid2D(RandomAccessSpace):
     # Space
     # -----
     def neighbors(
-        self, state: Grid2D.State
+        self, state: Space.State
     ) -> Iterable[Tuple[Grid2D.Action, Grid2D.State]]:
         """Generates the Actions and neighbor States."""
+        if not isinstance(state, Grid2D.State):
+            raise TypeError("Only Grid2D.State is supported")
+
         # pylint: disable=invalid-name
         for a, cell in self.adjacent_coordinates(cell=state.agent_position):
             if not self.is_wall(cell):
@@ -168,14 +174,16 @@ class Grid2DProblem(Problem):
     def __init__(
         self,
         space: Grid2D,
-        starting_states: Set[Grid2D.State],
+        starting_states: Sequence[Grid2D.State],
         goals: Set[Tuple[int, int]],
     ):
         super().__init__(space, starting_states)
         self.goals = goals
 
-    def is_goal(self, state: Grid2D.State) -> bool:
+    def is_goal(self, state: Space.State) -> bool:
         """Checks if a state is a goal for this Problem."""
+        if not isinstance(state, Grid2D.State):
+            raise TypeError("Only Grid2D.State is supported")
         return state.agent_position in self.goals
 
     def all_heuristics(self) -> List[Heuristic]:
@@ -197,8 +205,11 @@ class Grid2DDiscreteMetric(Heuristic):
     def __init__(self, problem):
         super().__init__(problem)
 
-    def __call__(self, state: Grid2D.State):
+    def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
+        if not isinstance(state, Grid2D.State):
+            raise TypeError("Only Grid2D.State is supported")
+
         if state.agent_position in self.problem.goals:
             return 0
         return 1
@@ -210,8 +221,11 @@ class Grid2DSingleDimensionDistance(Heuristic):
     def __init__(self, problem):
         super().__init__(problem)
 
-    def __call__(self, state: Grid2D.State):
+    def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
+        if not isinstance(state, Grid2D.State):
+            raise TypeError("Only Grid2D.State is supported")
+
         if self.problem.goals:
             pos = state.agent_position
             return max(
@@ -227,8 +241,11 @@ class Grid2DManhattanDistance(Heuristic):
     def __init__(self, problem):
         super().__init__(problem)
 
-    def __call__(self, state: Grid2D.State):
+    def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
+        if not isinstance(state, Grid2D.State):
+            raise TypeError("Only Grid2D.State is supported")
+
         if self.problem.goals:
             pos = state.agent_position
             return min([manhattan_distance_2d(pos, g) for g in self.problem.goals])

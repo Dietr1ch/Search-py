@@ -7,7 +7,7 @@ A small binary showcasing the search library
 import random
 from typing import List
 
-import numpy as np
+import numpy as np  # type: ignore
 from termcolor import colored
 
 from search.algorithms.bfs import BFS

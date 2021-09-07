@@ -11,10 +11,10 @@ from search.space import Space
 
 
 class Dijkstra(SearchAlgorithm):
-    """Breadth-first Search.
+    """Best-first Search.
 
-    Implements Open with a List and a set.
-    It uses the base Node class as we don't need to extend it.
+    Implements Open with an intrusive Heap.
+    Extends the base search Nodes to store internals.
     """
 
     class DijkstraNode(Node, IntrusiveHeap.Node):
@@ -63,11 +63,11 @@ class Dijkstra(SearchAlgorithm):
         # IntrusiveHeap.Node
         # ------------------
         def __lt__(self, other) -> bool:
-            """Returns < of "(f, h)" to perform informed/optimistic tie-breaking."""
+            """Compares the cost of reaching the nodes."""
             return self.g < other.g
 
     class Open(SearchAlgorithm.Open):
-        """An Open set implementation using a Queue."""
+        """An Open set implementation using an intrusive Heap."""
 
         def __init__(self):
             self.heap: IntrusiveHeap = IntrusiveHeap()
@@ -120,8 +120,11 @@ class Dijkstra(SearchAlgorithm):
         self.nodes_created += 1
         return Dijkstra.DijkstraNode(state, action=None, parent=None, g=0)
 
-    def reach(self, state: Space.State, action: Space.Action, parent: DijkstraNode):
+    def reach(self, state: Space.State, action: Space.Action, parent: Node):
         """Reaches a state and updates Open."""
+        if not isinstance(parent, Dijkstra.DijkstraNode):
+            raise TypeError("Only DijkstraNode is supported")
+
         # pylint: disable=invalid-name
         g = parent.g + action.cost(parent.state)
 

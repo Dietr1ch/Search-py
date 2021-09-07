@@ -11,9 +11,9 @@ from __future__ import annotations
 import copy
 import random
 from enum import Enum
-from typing import Iterable, List, Set, Tuple
+from typing import Iterable, List, Sequence, Set, Tuple
 
-import numpy as np
+import numpy as np  # type: ignore
 from search.space import Heuristic, Problem, RandomAccessSpace, Space
 from termcolor import colored
 
@@ -240,12 +240,11 @@ class NMPuzzleProblem(Problem):
     def __init__(
         self,
         space: NMPuzzle,
-        starting_states: Set[NMPuzzle.State],
-        goal_states: Set[NMPuzzle.State],
+        starting_states: Sequence[NMPuzzle.State],
+        goal_states: Sequence[NMPuzzle.State],
     ):
-        # NOTE: mypy refuses to say that [B] is a [A] when B:A :/
         super().__init__(space, starting_states)
-        self.goal_states = goal_states
+        self.goal_states = set(goal_states)
 
     def is_goal(self, state: Space.State) -> bool:
         """Checks if a state is a goal for this Problem."""
