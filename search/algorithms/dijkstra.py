@@ -2,6 +2,9 @@
 Dijkstra's specialization of a generic search algorithm.
 """
 
+# https://stackoverflow.com/questions/33533148/how-do-i-type-hint-a-method-with-the-type-of-the-enclosing-class
+from __future__ import annotations
+
 from typing import Dict, List, Optional
 
 from data_structures.intrusive_heap import IntrusiveHeap
@@ -71,14 +74,17 @@ class Dijkstra(SearchAlgorithm):
 
         def __init__(self):
             self.heap: IntrusiveHeap = IntrusiveHeap()
-            self.node_map: Dict[Space.State, Node] = dict()
+            self.node_map: Dict[Space.State, Dijkstra.DijkstraNode] = dict()
 
         def insert(self, node: Node):
             """Appends a Node into the Open list."""
+            if not isinstance(node, Dijkstra.DijkstraNode):
+                raise TypeError("Only AStarNode is supported")
+
             self.node_map[node.state] = node
             self.heap.push(node)
 
-        def pop(self) -> Node:
+        def pop(self) -> Dijkstra.DijkstraNode:
             """Takes the first (oldest) Node from the Open list."""
             node = self.heap.pop()
             return self.node_map.pop(node.state)
@@ -98,7 +104,7 @@ class Dijkstra(SearchAlgorithm):
         def __getitem__(self, state: Space.State) -> Node:
             return self.node_map[state]
 
-        def sync_improvement(self, node):
+        def sync_improvement(self, node: Dijkstra.DijkstraNode):
             """Updates the internal heap to keep up with a node improvement.
 
             It must be called right after any node gets a better score.
