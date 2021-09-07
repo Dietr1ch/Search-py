@@ -48,10 +48,18 @@ else
 	  exit 2
 fi
 
+if mypy ./main.py
+then
+	  echo "Main type-checks"
+else
+	  echo "Main fails type-checking with mypy. Aborting commit."
+	  exit 3
+fi
+
 if ./main.py
 then
 	  echo "Main runs"
 else
 	  echo "Main failed. Aborting commit."
-	  exit 3
+	  exit 4
 fi
