@@ -122,7 +122,9 @@ class Problem:
 
         The heuristics will be sorted in decreasing quality (and likely cost).
         """
-        return []
+        return [
+            Heuristic,
+        ]
 
 
 class Heuristic:
@@ -141,7 +143,7 @@ class Heuristic:
 
     def __str__(self) -> str:
         """The name of this heuristic."""
-        return self.__class__.__name__
+        return "(Zero)Heuristic for {}".format(self.problem)
 
     def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""

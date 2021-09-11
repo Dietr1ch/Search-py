@@ -256,7 +256,7 @@ class HeuristicSearchAlgorithm(SearchAlgorithm):
     """A generic heuristic search algorithm."""
 
     def __init__(self, problem, heuristic: Heuristic):
-        assert heuristic.problem == problem
+        assert heuristic.problem == problem, "Heuristic is for another instance."
 
         super().__init__(problem)
         # pylint: disable=invalid-name

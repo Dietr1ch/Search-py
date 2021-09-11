@@ -30,16 +30,6 @@ def hash_sortable_set(sortable_set):
     return set_hash
 
 
-class Cell(Enum):
-    """Cell contents."""
-
-    EMPTY = " "
-    START = "S"
-    GOAL = "G"
-    WALL = "#"
-    BOMB = "B"
-
-
 class Bombs2D(RandomAccessSpace):
     """A 2D Grid with walls with a single Agent.
 
@@ -86,7 +76,7 @@ class Bombs2D(RandomAccessSpace):
             return (
                 self.agent_position == other.agent_position
                 and self.bombs == other.bombs
-                and self.bomb_positions == self.bomb_positions
+                and self.bomb_positions == other.bomb_positions
                 and self.destroyed_walls == other.destroyed_walls
             )
 
@@ -330,9 +320,6 @@ class Bombs2DProblem(Problem):
 class Bombs2DDiscreteMetric(Heuristic):
     """The Discrete metric, either 0 or 1."""
 
-    def __init__(self, problem):
-        super().__init__(problem)
-
     def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
         if not isinstance(state, Bombs2D.State):
@@ -342,12 +329,13 @@ class Bombs2DDiscreteMetric(Heuristic):
             return 0
         return 1
 
+    def __str__(self) -> str:
+        """The name of this heuristic."""
+        return "Bombs2DDiscreteMetric for {}".format(self.problem)
+
 
 class Bombs2DSingleDimensionDistance(Heuristic):
     """The Manhattan distance."""
-
-    def __init__(self, problem):
-        super().__init__(problem)
 
     def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
@@ -362,12 +350,13 @@ class Bombs2DSingleDimensionDistance(Heuristic):
             )
         return INFINITY
 
+    def __str__(self) -> str:
+        """The name of this heuristic."""
+        return "Bombs2DSingleDimensionDistance for {}".format(self.problem)
+
 
 class Bombs2DManhattanDistance(Heuristic):
     """The Manhattan distance."""
-
-    def __init__(self, problem):
-        super().__init__(problem)
 
     def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
@@ -378,6 +367,20 @@ class Bombs2DManhattanDistance(Heuristic):
             pos = state.agent_position
             return min([manhattan_distance_2d(pos, g) for g in self.problem.goals])
         return INFINITY
+
+    def __str__(self) -> str:
+        """The name of this heuristic."""
+        return "Bombs2DManhattanDistance for {}".format(self.problem)
+
+
+class Cell(Enum):
+    """Cell contents."""
+
+    EMPTY = " "
+    START = "S"
+    GOAL = "G"
+    WALL = "#"
+    BOMB = "B"
 
 
 class Bombs2DMetaProblem:
@@ -400,17 +403,19 @@ class Bombs2DMetaProblem:
         grid = np.full((self.H, self.W), False)
         for y, row in enumerate(grid_lines):
             for x, char in enumerate(row):
-                if char == "#":
+                if char == Cell.WALL.value:
                     grid[y][x] = True
                     continue
 
                 position = (x, y)
-                if char == "S":
+                if char == Cell.START.value:
                     start_positions.append(position)
-                elif char == "B":
+                elif char == Cell.BOMB.value:
                     self.starting_bomb_positions.append(position)
-                elif char == "G":
+                elif char == Cell.GOAL.value:
                     self.goal_positions.append(position)
+                else:
+                    assert char == Cell.EMPTY.value
 
         self.space = Bombs2D(grid)
         self.starting_states: List[Bombs2D.State] = []

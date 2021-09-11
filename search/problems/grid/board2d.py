@@ -21,15 +21,6 @@ def manhattan_distance_2d(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
-class Cell(Enum):
-    """Cell contents."""
-
-    EMPTY = " "
-    START = "S"
-    GOAL = "G"
-    WALL = "#"
-
-
 class Grid2D(RandomAccessSpace):
     """A 2D Grid with walls with a single Agent.
 
@@ -202,9 +193,6 @@ class Grid2DProblem(Problem):
 class Grid2DDiscreteMetric(Heuristic):
     """The Discrete metric, either 0 or 1."""
 
-    def __init__(self, problem):
-        super().__init__(problem)
-
     def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
         if not isinstance(state, Grid2D.State):
@@ -214,12 +202,13 @@ class Grid2DDiscreteMetric(Heuristic):
             return 0
         return 1
 
+    def __str__(self) -> str:
+        """The name of this heuristic."""
+        return "Grid2DDiscreteMetric for {}".format(self.problem)
+
 
 class Grid2DSingleDimensionDistance(Heuristic):
     """The Manhattan distance."""
-
-    def __init__(self, problem):
-        super().__init__(problem)
 
     def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
@@ -234,12 +223,13 @@ class Grid2DSingleDimensionDistance(Heuristic):
             )
         return INFINITY
 
+    def __str__(self) -> str:
+        """The name of this heuristic."""
+        return "Grid2DSingleDimensionDistance for {}".format(self.problem)
+
 
 class Grid2DManhattanDistance(Heuristic):
     """The Manhattan distance."""
-
-    def __init__(self, problem):
-        super().__init__(problem)
 
     def __call__(self, state: Space.State):
         """The estimated cost of reaching the goal."""
@@ -250,6 +240,19 @@ class Grid2DManhattanDistance(Heuristic):
             pos = state.agent_position
             return min([manhattan_distance_2d(pos, g) for g in self.problem.goals])
         return INFINITY
+
+    def __str__(self) -> str:
+        """The name of this heuristic."""
+        return "Grid2DManhattanDistance for {}".format(self.problem)
+
+
+class Cell(Enum):
+    """Cell contents."""
+
+    EMPTY = " "
+    START = "S"
+    GOAL = "G"
+    WALL = "#"
 
 
 class Grid2DMetaProblem:
@@ -270,15 +273,17 @@ class Grid2DMetaProblem:
         grid = np.full((self.H, self.W), False)
         for y, row in enumerate(grid_lines):
             for x, char in enumerate(row):
-                if char == "#":
+                if char == Cell.WALL.value:
                     grid[y][x] = True
                     continue
 
                 position = (x, y)
-                if char == "S":
+                if char == Cell.START.value:
                     self.starts.append(Grid2D.State(position))
-                elif char == "G":
+                elif char == Cell.GOAL.value:
                     self.goals.append(position)
+                else:
+                    assert char == Cell.EMPTY.value
 
         self.space = Grid2D(grid)
 
