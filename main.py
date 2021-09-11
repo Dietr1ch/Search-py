@@ -13,6 +13,7 @@ from termcolor import colored
 from search.algorithms.bfs import BFS
 from search.algorithms.dfs import DFS
 from search.algorithms.dijkstra import Dijkstra
+from search.algorithms.greedy import Greedy
 from search.algorithms.search import HeuristicSearchAlgorithm, SearchAlgorithm
 from search.problems.grid.board2d import Grid2DMetaProblem, Grid2DProblem
 from search.problems.grid.bomb import Bombs2DMetaProblem, Bombs2DProblem
@@ -265,6 +266,7 @@ def main():
         DFS,
         BFS,
         Dijkstra,
+        Greedy,
     ]
 
     for problem_class in metaproblems_dict:
