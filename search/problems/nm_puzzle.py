@@ -252,14 +252,15 @@ class NMPuzzleProblem(Problem):
             raise TypeError("Only NMPuzzle.State is supported")
         return state in self.goal_states
 
-    def all_heuristics(self) -> List[Heuristic]:
-        """Returns a sorted list of heuristic functions for a given problem.
+    @staticmethod
+    def all_heuristics():
+        """Returns a sorted list of heuristic classes for a given problem.
 
         The heuristics will be sorted in decreasing quality (and likely cost).
         """
         return [
-            NMPuzzleManhattanDistance(self),
-            Heuristic(self),
+            NMPuzzleManhattanDistance,
+            Heuristic,
         ]
 
 
@@ -302,7 +303,8 @@ class NMPuzzleManhattanDistance(Heuristic):
             raise TypeError("Only NMPuzzle.State is supported")
         assert self.problem.goal_states, "Some goal states must be defined."
 
-        raise NotImplementedError("TODO: Implement this heuristic.")
+        # TODO: Implement the NMPuzzle Manhattan Distance heuristic.
+        return 0
 
 
 def build_goal_state(height: int, width: int) -> NMPuzzle.State:

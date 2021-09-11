@@ -13,19 +13,22 @@ from termcolor import colored
 from search.algorithms.bfs import BFS
 from search.algorithms.dfs import DFS
 from search.algorithms.dijkstra import Dijkstra
-from search.algorithms.search import SearchAlgorithm
-from search.problems.grid.board2d import Grid2DMetaProblem
-from search.problems.grid.bomb import Bombs2DMetaProblem
-from search.problems.nm_puzzle import NMPuzzleMetaProblem
-from search.space import Problem
+from search.algorithms.search import HeuristicSearchAlgorithm, SearchAlgorithm
+from search.problems.grid.board2d import Grid2DMetaProblem, Grid2DProblem
+from search.problems.grid.bomb import Bombs2DMetaProblem, Bombs2DProblem
+from search.problems.nm_puzzle import NMPuzzleMetaProblem, NMPuzzleProblem
+from search.space import Heuristic, Problem
 
 
-def solve(algorithm_class, problem: Problem):
+def solve(algorithm_class, problem: Problem, heuristic_class):
     """Solves a problem with a given search algorithm.
 
     Returns: Dictionary with a summary and key metrics.
     """
-    search_algorithm: SearchAlgorithm = algorithm_class(problem)
+    if issubclass(algorithm_class, HeuristicSearchAlgorithm):
+        search_algorithm = algorithm_class(problem, heuristic_class(problem))
+    else:
+        search_algorithm = algorithm_class(problem)
     assert search_algorithm is not None
 
     goal_node = search_algorithm.search()
@@ -66,12 +69,16 @@ def solve(algorithm_class, problem: Problem):
     return stats
 
 
-def compare(algorithms: List[SearchAlgorithm], problem: Problem):
+def compare(algorithms: List[SearchAlgorithm], problem: Problem, heuristic: Heuristic):
     """Solves a problem with many search algorithms and compares the solutions.
 
     Returns: Dictionary with a summary and key metrics.
     """
-    print("Solving this %s problem," % problem.space.__class__.__name__)
+    print(
+        "Solving this {} problem with the {} heursitic,".format(
+            problem.space.__class__.__name__, str(heuristic)
+        )
+    )
     print(problem.start_to_str())
 
     solutions = dict()
@@ -87,11 +94,11 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
     }
     metrics = list(best.keys())
 
-    for a in algorithms:
-        solutions[a] = solve(a, problem)
+    for algorithm in algorithms:
+        solutions[algorithm] = solve(algorithm, problem, heuristic)
         for metric in metrics:
-            if solutions[a][metric] < best[metric]:
-                best[metric] = solutions[a][metric]
+            if solutions[algorithm][metric] < best[metric]:
+                best[metric] = solutions[algorithm][metric]
 
     metrics.remove("cost")
     for a, solution in solutions.items():
@@ -112,7 +119,11 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
             )
         for metric in metrics:
             if solution[metric] > best[metric]:
-                ratio = solution[metric] / best[metric]
+                if best[metric] > 0:
+                    ratio = solution[metric] / best[metric]
+                else:
+                    ratio = float("inf")
+
                 color = None
                 attrs = []
                 if ratio < 1.04:
@@ -131,7 +142,7 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
                     "    - Not the best on {}!! {} ({} vs {})".format(
                         colored("{:12}".format(metric), color, attrs=attrs),
                         colored(
-                            "{:.2%}".format(solution[metric] / best[metric]),
+                            "{:.2%}".format(ratio),
                             color,
                             attrs=attrs,
                         ),
@@ -145,108 +156,110 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
 
 def main():
     """A simple program solving an easy maze."""
-    metaproblems = [
-        Grid2DMetaProblem(
-            [
-                "   G ",
-                " ####",
-                "     ",
-                "#### ",
-                "     ",
-                "S    ",
-            ]
-        ),
-        Grid2DMetaProblem(
-            [
-                "G          ",
-                "           ",
-                "########## ",
-                "           ",
-                "          G",
-                " ##########",
-                "           ",
-                "           ",
-                "########## ",
-                "           ",
-                "S          ",
-            ]
-        ),
-        # It can't get easier right?
-        Grid2DMetaProblem(
-            [
-                "G  S{:60}G".format(" "),
-            ]
-        ),
-        # What if there's no goal?
-        Grid2DMetaProblem(
-            [
-                "   S{:60} ".format(" "),
-            ]
-        ),
-        Bombs2DMetaProblem(
-            [
-                "  G",
-                "###",
-                "B S",
+    metaproblems_dict = {
+        Grid2DMetaProblem: {
+            "problems": [
+                Grid2DMetaProblem(
+                    [
+                        "   G ",
+                        " ####",
+                        "     ",
+                        "#### ",
+                        "     ",
+                        "S    ",
+                    ]
+                ),
+                Grid2DMetaProblem(
+                    [
+                        "G          ",
+                        "           ",
+                        "########## ",
+                        "           ",
+                        "          G",
+                        " ##########",
+                        "           ",
+                        "           ",
+                        "########## ",
+                        "           ",
+                        "S          ",
+                    ]
+                ),
+                # It can't get easier right?
+                Grid2DMetaProblem(
+                    [
+                        "G  S{:60}G".format(" "),
+                    ]
+                ),
+                # What if there's no goal?
+                Grid2DMetaProblem(
+                    [
+                        "   S{:60} ".format(" "),
+                    ]
+                ),
             ],
-            starting_bombs=0,
-        ),
-        Bombs2DMetaProblem(
-            [
-                "G    ",
-                "#####",
-                "    B",
-                "S    ",
-                "B    ",
+            "heuristics": Grid2DProblem.all_heuristics(),
+        },
+        Bombs2DMetaProblem: {
+            "problems": [
+                Bombs2DMetaProblem(
+                    [
+                        "  G",
+                        "###",
+                        "B S",
+                    ],
+                    starting_bombs=0,
+                ),
+                Bombs2DMetaProblem(
+                    [
+                        "G    ",
+                        "#####",
+                        "    B",
+                        "S    ",
+                        "B    ",
+                    ],
+                    starting_bombs=0,
+                ),
             ],
-            starting_bombs=0,
-        ),
-        # NOTE(ddaroch): The puzzles from these states to random goals might
-        # be unexpected.
-        NMPuzzleMetaProblem(
-            np.array(
-                [
-                    [1, 2, 0],
-                ]
-            )
-        ),
-        NMPuzzleMetaProblem(
-            np.array(
-                [
-                    [0, 1, 2],
-                    [3, 4, 5],
-                    [8, 6, 7],
-                ]
-            )
-        ),
-        NMPuzzleMetaProblem(
-            np.array(
-                [
-                    [11, 1, 2],
-                    [0, 4, 5],
-                    [3, 7, 8],
-                    [6, 9, 10],
-                ]
-            )
-        ),
-    ]
+            "heuristics": Bombs2DProblem.all_heuristics(),
+        },
+        NMPuzzleMetaProblem: {
+            "problems": [
+                # NOTE(ddaroch): The puzzles from these states to random goals might
+                # be unexpected.
+                NMPuzzleMetaProblem(
+                    np.array(
+                        [
+                            [1, 2, 0],
+                        ]
+                    )
+                ),
+                NMPuzzleMetaProblem(
+                    np.array(
+                        [
+                            [0, 1, 2],
+                            [3, 4, 5],
+                            [8, 6, 7],
+                        ]
+                    )
+                ),
+                NMPuzzleMetaProblem(
+                    np.array(
+                        [
+                            [11, 1, 2],
+                            [0, 4, 5],
+                            [3, 7, 8],
+                            [6, 9, 10],
+                        ]
+                    )
+                ),
+            ],
+            "heuristics": NMPuzzleProblem.all_heuristics(),
+        },
+    }
 
-    problems = []
     random_problems = 1
 
     # pylint: disable=invalid-name
-    for mp in metaproblems:
-        # Add all the simple given problems
-        for p in mp.simple_given():
-            problems.append(p)
-
-        # Add all the multi-goal given problems
-        for p in mp.multi_goal_given():
-            problems.append(p)
-
-        random.seed(1)
-        for _ in range(random_problems):
-            problems.append(mp.simple_random())
 
     algorithms = [
         DFS,
@@ -254,8 +267,30 @@ def main():
         Dijkstra,
     ]
 
-    for p in problems:
-        compare(algorithms, p)
+    for problem_class in metaproblems_dict:
+        metaproblems = metaproblems_dict[problem_class]["problems"]
+        heuristic_classes = metaproblems_dict[problem_class]["heuristics"]
+        if len(heuristic_classes) == 0:
+            heuristic_classes = [Heuristic]
+
+        # Generate all the problems for this problem class
+        problems = []
+        for mp in metaproblems:
+            # Add all the simple given problems
+            for p in mp.simple_given():
+                problems.append(p)
+
+            # Add all the multi-goal given problems
+            for p in mp.multi_goal_given():
+                problems.append(p)
+
+            random.seed(1)
+            for _ in range(random_problems):
+                problems.append(mp.simple_random())
+
+        for problem in problems:
+            for heuristic_class in heuristic_classes:
+                compare(algorithms, problem, heuristic_class)
 
 
 if __name__ == "__main__":

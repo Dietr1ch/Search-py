@@ -150,7 +150,6 @@ class Grid2D(RandomAccessSpace):
         )
 
         return grid_str
-        pass
 
     # RandomAccessSpace
     # -----------------
@@ -177,16 +176,17 @@ class Grid2DProblem(Problem):
             raise TypeError("Only Grid2D.State is supported")
         return state.agent_position in self.goals
 
-    def all_heuristics(self) -> List[Heuristic]:
-        """Returns a sorted list of heuristic functions for a given problem.
+    @staticmethod
+    def all_heuristics():
+        """Returns a sorted list of heuristic classes for a given problem.
 
         The heuristics will be sorted in decreasing quality (and likely cost).
         """
         return [
-            Grid2DManhattanDistance(self),
-            Grid2DSingleDimensionDistance(self),
-            Grid2DDiscreteMetric(self),
-            Heuristic(self),
+            Grid2DManhattanDistance,
+            Grid2DSingleDimensionDistance,
+            Grid2DDiscreteMetric,
+            Heuristic,
         ]
 
 

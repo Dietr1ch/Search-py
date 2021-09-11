@@ -4,7 +4,7 @@ Definitions for a Search Space and Search Problems over them.
 
 import copy
 from enum import Enum
-from typing import Iterable, List, Sequence, Tuple
+from typing import Dict, Iterable, List, Sequence, Tuple
 
 
 class Space:
@@ -117,14 +117,21 @@ class Problem:
             problem_str += "\n"
         return problem_str
 
-    def all_heuristics(self):
-        """Returns a sorted list of heuristic functions for a given problem.
+    @classmethod
+    def all_heuristics(cls):
+        """Returns a sorted list of heuristic classes for a given problem.
 
         The heuristics will be sorted in decreasing quality (and likely cost).
         """
-        return [
-            Heuristic,
-        ]
+        raise NotImplementedError("")
+
+    def _eval_heuristics(self, state: Space.State) -> Dict[str, int]:
+        """Gets a dictionary with the value of all heuristics for this state.
+
+        Using this repeatedly is not efficient as ephemeral Heuristics are
+        instantiated. This is only meant for being used in tests.
+        """
+        return {hc.__name__: hc(self)(state) for hc in self.all_heuristics()}
 
 
 class Heuristic:

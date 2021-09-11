@@ -3,7 +3,7 @@ from typing import Optional
 from search.algorithms.bfs import BFS
 from search.algorithms.search import Node, SearchAlgorithm
 from search.problems.grid.board2d import Grid2DMetaProblem
-from search.space import Heuristic, Problem
+from search.space import Problem
 
 INFINITY = float("inf")
 
@@ -86,8 +86,13 @@ def test_heuristic_no_goal():
 
     assert len(problem.starting_states) == 1
     for start in problem.starting_states:
-        h_values = [h(start) for h in problem.all_heuristics()]
-        assert h_values == [INFINITY, INFINITY, 1, 0]
+        # pylint: protected-access
+        assert problem._eval_heuristics(start) == {
+            "Grid2DManhattanDistance": INFINITY,
+            "Grid2DSingleDimensionDistance": INFINITY,
+            "Grid2DDiscreteMetric": 1,
+            "Heuristic": 0,
+        }
 
 
 def test_heuristic_single_goal():
@@ -100,8 +105,13 @@ def test_heuristic_single_goal():
 
     assert len(problem.starting_states) == 1
     for start in problem.starting_states:
-        h_values = [h(start) for h in problem.all_heuristics()]
-        assert h_values == [2, 2, 1, 0]
+        # pylint: protected-access
+        assert problem._eval_heuristics(start) == {
+            "Grid2DManhattanDistance": 2,
+            "Grid2DSingleDimensionDistance": 2,
+            "Grid2DDiscreteMetric": 1,
+            "Heuristic": 0,
+        }
 
 
 def test_heuristic_multi_goal():
@@ -126,5 +136,10 @@ def test_heuristic_multi_goal():
         for problem in metaproblem.multi_goal_given():
             assert len(problem.starting_states) == 1
             for start in problem.starting_states:
-                h_values = [h(start) for h in problem.all_heuristics()]
-                assert h_values == [2, 1, 1, 0]
+                # pylint: protected-access
+                assert problem._eval_heuristics(start) == {
+                    "Grid2DManhattanDistance": 2,
+                    "Grid2DSingleDimensionDistance": 1,
+                    "Grid2DDiscreteMetric": 1,
+                    "Heuristic": 0,
+                }

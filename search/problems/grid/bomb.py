@@ -304,16 +304,17 @@ class Bombs2DProblem(Problem):
 
         return state.agent_position in self.goals
 
-    def all_heuristics(self) -> List[Heuristic]:
-        """Returns a sorted list of heuristic functions for a given problem.
+    @staticmethod
+    def all_heuristics():
+        """Returns a sorted list of heuristic classes for a given problem.
 
         The heuristics will be sorted in decreasing quality (and likely cost).
         """
         return [
-            Bombs2DManhattanDistance(self),
-            Bombs2DSingleDimensionDistance(self),
-            Bombs2DDiscreteMetric(self),
-            Heuristic(self),
+            Bombs2DManhattanDistance,
+            Bombs2DSingleDimensionDistance,
+            Bombs2DDiscreteMetric,
+            Heuristic,
         ]
 
 

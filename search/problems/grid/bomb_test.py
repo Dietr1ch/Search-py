@@ -2,7 +2,7 @@ from typing import Optional
 
 from search.algorithms.bfs import BFS
 from search.algorithms.search import Node, SearchAlgorithm
-from search.problems.grid.bomb import Bombs2DMetaProblem
+from search.problems.grid.bomb import Bombs2DMetaProblem, Bombs2DProblem
 from search.space import Heuristic, Problem
 
 INFINITY = float("inf")
@@ -92,8 +92,13 @@ def test_heuristic_no_goal():
 
     assert len(problem.starting_states) == 1
     for start in problem.starting_states:
-        h_values = [h(start) for h in problem.all_heuristics()]
-        assert h_values == [INFINITY, INFINITY, 1, 0]
+        # pylint: protected-access
+        assert problem._eval_heuristics(start) == {
+            "Bombs2DManhattanDistance": INFINITY,
+            "Bombs2DSingleDimensionDistance": INFINITY,
+            "Bombs2DDiscreteMetric": 1,
+            "Heuristic": 0,
+        }
 
 
 def test_heuristic_single_goal():
@@ -107,8 +112,13 @@ def test_heuristic_single_goal():
 
     assert len(problem.starting_states) == 1
     for start in problem.starting_states:
-        h_values = [h(start) for h in problem.all_heuristics()]
-        assert h_values == [2, 2, 1, 0]
+        # pylint: protected-access
+        assert problem._eval_heuristics(start) == {
+            "Bombs2DManhattanDistance": 2,
+            "Bombs2DSingleDimensionDistance": 2,
+            "Bombs2DDiscreteMetric": 1,
+            "Heuristic": 0,
+        }
 
 
 def test_heuristic_multi_goal():
@@ -135,5 +145,10 @@ def test_heuristic_multi_goal():
         for problem in metaproblem.multi_goal_given():
             assert len(problem.starting_states) == 1
             for start in problem.starting_states:
-                h_values = [h(start) for h in problem.all_heuristics()]
-                assert h_values == [2, 1, 1, 0]
+                # pylint: protected-access
+                assert problem._eval_heuristics(start) == {
+                    "Bombs2DManhattanDistance": 2,
+                    "Bombs2DSingleDimensionDistance": 1,
+                    "Bombs2DDiscreteMetric": 1,
+                    "Heuristic": 0,
+                }
