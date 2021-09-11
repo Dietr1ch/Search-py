@@ -363,14 +363,18 @@ class NMPuzzleMetaProblem:
 
     def simple_random(self):
         """Creates a random problem with a single start and goal."""
-        starting_state = self.space.random_state()
 
         # Generate the goal with a random walk on the neighbors to ensure
         # reachability. IIRC 50% of the random states pairs are unreachable as
         # the state graph has 2 huge components
-        goal_state = copy.deepcopy(starting_state)
+        # This works well because actions are reversible, otherwise we would
+        # need to somehow compute the reverse actions.
+        goal_state = build_goal_state(self.H, self.W)
+        starting_state = copy.deepcopy(goal_state)
         for _ in range(20):
-            (_, goal_state) = random.choice(list(self.space.neighbors(goal_state)))
+            (_, starting_state) = random.choice(
+                list(self.space.neighbors(starting_state))
+            )
 
         starting_states = set([starting_state])
         goal_states = set([goal_state])
