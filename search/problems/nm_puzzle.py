@@ -60,7 +60,6 @@ class NMPuzzle(RandomAccessSpace):
             assert (0, 0) <= (max_y, max_x) < self.grid.shape
 
             self._verify()
-            # assert self._verify(), "Something's odd"
 
         def _verify(self):
             (H, W) = self.grid.shape
@@ -95,7 +94,7 @@ class NMPuzzle(RandomAccessSpace):
 
         def __str__(self) -> str:
             """The string representation of this state."""
-            return "NMPuzzle.State[grid={}]".format(self.grid)
+            return "NMPuzzle.State[grid={}]".format(self.grid.tolist())
 
         def __eq__(self, other: object) -> bool:
             if not isinstance(other, NMPuzzle.State):

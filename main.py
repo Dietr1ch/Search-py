@@ -70,14 +70,14 @@ def solve(algorithm_class, problem: Problem, heuristic_class):
     return stats
 
 
-def compare(algorithms: List[SearchAlgorithm], problem: Problem, heuristic: Heuristic):
+def compare(algorithms: List[SearchAlgorithm], problem: Problem, heuristic_class):
     """Solves a problem with many search algorithms and compares the solutions.
 
     Returns: Dictionary with a summary and key metrics.
     """
     print(
-        "Solving this {} problem with the {} heursitic,".format(
-            problem.space.__class__.__name__, str(heuristic)
+        "Solving this {} problem with the '{}' heuristic,".format(
+            problem.space.__class__.__name__, heuristic_class
         )
     )
     print(problem.start_to_str())
@@ -96,7 +96,7 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem, heuristic: Heur
     metrics = list(best.keys())
 
     for algorithm in algorithms:
-        solutions[algorithm] = solve(algorithm, problem, heuristic)
+        solutions[algorithm] = solve(algorithm, problem, heuristic_class)
         for metric in metrics:
             if solutions[algorithm][metric] < best[metric]:
                 best[metric] = solutions[algorithm][metric]

@@ -89,6 +89,10 @@ class Dijkstra(SearchAlgorithm):
             node = self.heap.pop()
             return self.node_map.pop(node.state)
 
+        def peek(self) -> Node:
+            """Looks at the top Node from Open without removing it."""
+            return self.heap.peek()
+
         def __len__(self) -> int:
             """Counts the Nodes in Open."""
             return len(self.heap)

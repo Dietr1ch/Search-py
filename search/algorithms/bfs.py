@@ -33,6 +33,10 @@ class BFS(SearchAlgorithm):
             self.states.remove(node.state)
             return node
 
+        def peek(self) -> Node:
+            """Looks at the top Node from Open without removing it."""
+            return self.nodes[0]
+
         def __len__(self) -> int:
             """Counts the Nodes in Open."""
             return len(self.nodes)

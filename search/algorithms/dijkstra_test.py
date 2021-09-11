@@ -27,7 +27,7 @@ def test_no_solution():
     # Search
     goal_node: Optional[Node] = dijkstra.search()
 
-    # A solution must be found
+    # A solution must not be found
     assert goal_node is None
     # This maps needs to be completely expanded
     assert dijkstra.expansions == 22

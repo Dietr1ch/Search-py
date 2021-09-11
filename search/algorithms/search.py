@@ -189,6 +189,10 @@ class SearchAlgorithm:
             """Takes a Node from Open."""
             raise NotImplementedError("")
 
+        def peek(self) -> Node:
+            """Looks at the top Node from Open without removing it."""
+            raise NotImplementedError("")
+
         def __len__(self) -> int:
             """Counts the Nodes in Open."""
             raise NotImplementedError("")
@@ -201,6 +205,12 @@ class SearchAlgorithm:
     def name(cls) -> str:
         """Returns the name of the Algorithm."""
         raise NotImplementedError("")
+
+    def __str__(self) -> str:
+        """The string representation of this Node."""
+        return "{}[|open|={}, top_node={}]".format(
+            self.__class__.__name__, len(self.open), self.open.peek()
+        )
 
     @classmethod
     def create_open(cls) -> Open:
@@ -227,8 +237,8 @@ class SearchAlgorithm:
                 return node
 
             self.expansions += 1
-            if self.expansions > self.expansion_limit:
-                print(self, ": giving up...")
+            if self.expansions >= self.expansion_limit:
+                print(str(self), ": giving up...")
                 return None
             # Expand the node and consider all its neighboring states.
             self.closed.add(node.state)
