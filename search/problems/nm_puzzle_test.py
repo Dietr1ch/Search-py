@@ -4,16 +4,61 @@ Tests for the NM-puzzle. A generalization of the 8-puzzle
 An implementation detail that could be surprising, is that the empty space uses
 the highest number instead of 0.
 """
+import random
 from typing import Optional
 
 import numpy as np
 import pytest
 from search.algorithms.bfs import BFS
 from search.algorithms.search import Node, SearchAlgorithm
-from search.problems.nm_puzzle import NMPuzzle, NMPuzzleMetaProblem
+from search.problems.nm_puzzle import NMPuzzle, NMPuzzleMetaProblem, build_goal_state
 from search.space import Heuristic, Problem
 
 INFINITY = float("inf")
+
+
+def verify_state(state: NMPuzzle.State):
+    (height, width) = state.grid.shape
+    puzzle_size = height * width
+
+    available_numbers = set(range(puzzle_size))
+    max_x = -1
+    max_y = -1
+    max_n = -1
+
+    # pylint: disable=invalid-name
+    for y, row in enumerate(state.grid):
+        for x, num in enumerate(row):
+            if num > max_n:
+                max_x = x
+                max_y = y
+                max_n = num
+            assert num in available_numbers
+            available_numbers.remove(num)
+
+    assert len(available_numbers) == 0
+    assert state.grid[max_y][max_x] == puzzle_size - 1
+
+
+def test_states():
+    metaproblem = NMPuzzleMetaProblem(
+        np.array(
+            [
+                [1, 0, 2],
+                [6, 8, 7],
+                [3, 4, 5],
+                [9, 11, 10],
+            ]
+        )
+    )
+
+    random.seed(1)
+    problem: Problem = next(iter(metaproblem.simple_given()))
+    state: NMPuzzle.State = next(iter(problem.starting_states))
+
+    for _ in range(100):
+        (_, state) = random.choice(list(problem.space.neighbors(state)))
+        verify_state(state)
 
 
 def test_no_solution():

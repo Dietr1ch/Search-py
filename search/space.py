@@ -59,7 +59,7 @@ class Space:
         # Something is wrong, let's try to explain the current state.
         action_strs = [str(a) for a, _ in self.neighbors(state)]
         raise ValueError(
-            "Received an action that can't be performed at this State. Can't perform {} from {}. Can only perform {}".format(
+            "Received an action that can't be performed at this State. Can't perform {} from {}. Can only perform [{}].".format(
                 action, state, ", ".join(action_strs)
             )
         )
@@ -116,6 +116,10 @@ class Problem:
             problem_str += self.to_str(starting_state)
             problem_str += "\n"
         return problem_str
+
+    def __str__(self) -> str:
+        """The string representing some state over this Problem."""
+        return self.start_to_str()
 
     @classmethod
     def all_heuristics(cls):

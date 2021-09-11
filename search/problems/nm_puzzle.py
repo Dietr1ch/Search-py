@@ -59,27 +59,6 @@ class NMPuzzle(RandomAccessSpace):
             self.max_y: int = max_y
             assert (0, 0) <= (max_y, max_x) < self.grid.shape
 
-            self._verify()
-
-        def _verify(self):
-            (H, W) = self.grid.shape
-            available_numbers = set(range(H * W))
-            max_x = -1
-            max_y = -1
-            max_n = -1
-            for y, row in enumerate(self.grid):
-                for x, num in enumerate(row):
-                    if num > max_n:
-                        max_x = x
-                        max_y = y
-                        max_n = num
-                    assert num in available_numbers
-                    available_numbers.remove(num)
-
-            assert len(available_numbers) == 0
-            assert self.grid[max_y][max_x] == H * W - 1
-            assert max_n == H * W - 1
-
         def __hash__(self) -> int:
             """The hash of this state."""
             # pylint: disable=invalid-name
