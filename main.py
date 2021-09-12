@@ -17,6 +17,7 @@ from search.algorithms.greedy import Greedy
 from search.algorithms.search import HeuristicSearchAlgorithm, SearchAlgorithm
 from search.problems.grid.board2d import Grid2DMetaProblem, Grid2DProblem
 from search.problems.grid.bomb import Bombs2DMetaProblem, Bombs2DProblem
+from search.problems.grid.sokoban import SokobanMetaProblem, SokobanProblem
 from search.problems.nm_puzzle import NMPuzzleMetaProblem, NMPuzzleProblem
 from search.space import Heuristic, Problem
 
@@ -255,6 +256,18 @@ def main():
                 ),
             ],
             "heuristics": NMPuzzleProblem.all_heuristics(),
+        },
+        SokobanMetaProblem: {
+            "problems": [
+                SokobanMetaProblem(
+                    [
+                        "S !G    G",
+                        "B B#!#B# ",
+                        "G#G# #G# ",
+                    ]
+                ),
+            ],
+            "heuristics": SokobanProblem.all_heuristics(),
         },
     }
 

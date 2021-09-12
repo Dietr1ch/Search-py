@@ -27,4 +27,5 @@ A collection of search algorithms for teaching and experimenting.
 ****** ~grid~
        -[[./search/problems/grid/board2d.py][board2d.py]]: ~class Board2D(Space, RandomAccessSpace)~
        -[[./search/problems/grid/bomb.py][bomb.py]]: ~class Bombs2D(Space, RandomAccessSpace)~
+       -[[./search/problems/grid/sokoban.py][sokoban.py]]: ~class Sokoban(Space, RandomAccessSpace)~
     - [[./main.py][main.py]]: Has a super simple benchmark.
