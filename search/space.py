@@ -4,7 +4,7 @@ Definitions for a Search Space and Search Problems over them.
 
 import copy
 from enum import Enum
-from typing import Dict, Iterable, List, Sequence, Tuple
+from typing import Dict, Iterable, Sequence, Tuple
 
 
 class Space:

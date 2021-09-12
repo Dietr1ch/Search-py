@@ -5,7 +5,7 @@ Dijkstra's specialization of a generic search algorithm.
 # https://stackoverflow.com/questions/33533148/how-do-i-type-hint-a-method-with-the-type-of-the-enclosing-class
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from data_structures.intrusive_heap import IntrusiveHeap
 

@@ -13,8 +13,6 @@ from search.problems.grid.board2d import (
 )
 from search.space import Problem
 
-# import pytest
-
 
 def test_no_solution():
     metaproblem = Grid2DMetaProblem(
