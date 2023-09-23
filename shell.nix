@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  pyPkgs = pkgs.python38Packages;
+  pyPkgs = pkgs.python311Packages;
 in
   pyPkgs.buildPythonApplication {
     pname = "search-py";
@@ -27,7 +27,7 @@ in
       ipython
       importmagic
       epc
-      python-language-server
+      python-lsp-server
       black
     ];
     checkPhase = ''
