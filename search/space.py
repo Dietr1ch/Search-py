@@ -122,7 +122,9 @@ class Problem:
 
         The heuristics will be sorted in decreasing quality (and likely cost).
         """
-        return []
+        return [
+            ZeroHeuristic(self),
+        ]
 
 
 class Heuristic:
@@ -144,5 +146,16 @@ class Heuristic:
         return self.__class__.__name__
 
     def __call__(self, state: Space.State):
+        """The estimated cost of reaching the goal."""
+        raise NotImplementedError("")
+
+
+class ZeroHeuristic(Heuristic):
+    """The Zero Heuristic."""
+
+    def __init__(self, problem):
+        super().__init__(problem)
+
+    def __call__(self, _state):
         """The estimated cost of reaching the goal."""
         return 0

@@ -11,7 +11,7 @@ from enum import Enum
 from typing import Iterable, List, Set, Tuple
 
 import numpy as np
-from search.space import Heuristic, Problem, RandomAccessSpace, Space
+from search.space import Heuristic, Problem, RandomAccessSpace, Space, ZeroHeuristic
 from termcolor import colored
 
 INFINITY = float("inf")
@@ -187,7 +187,7 @@ class Grid2DProblem(Problem):
             Grid2DManhattanDistance(self),
             Grid2DSingleDimensionDistance(self),
             Grid2DDiscreteMetric(self),
-            Heuristic(self),
+            ZeroHeuristic(self),
         ]
 
 
