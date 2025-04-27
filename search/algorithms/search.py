@@ -198,7 +198,7 @@ class SearchAlgorithm:
     @classmethod
     def name(cls) -> str:
         """Returns the name of the Algorithm."""
-        raise NotImplementedError("")
+        return cls.__name__
 
     @classmethod
     def create_open(cls) -> Open:

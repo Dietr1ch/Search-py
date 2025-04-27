@@ -3,7 +3,7 @@ from typing import Optional
 from search.algorithms.bfs import BFS
 from search.algorithms.search import Node, SearchAlgorithm
 from search.problems.grid.bomb import Bombs2DMetaProblem
-from search.space import Heuristic, Problem
+from search.space import Problem
 
 INFINITY = float("inf")
 

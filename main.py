@@ -9,21 +9,27 @@ from typing import List
 
 from termcolor import colored
 
+from search.algorithms.astar import AStar
 from search.algorithms.bfs import BFS
 from search.algorithms.dfs import DFS
 from search.algorithms.dijkstra import Dijkstra
-from search.algorithms.search import SearchAlgorithm
+from search.algorithms.search import HeuristicSearchAlgorithm, SearchAlgorithm
 from search.problems.grid.board2d import Grid2DMetaProblem
 from search.problems.grid.bomb import Bombs2DMetaProblem
-from search.space import Problem
+from search.space import Heuristic, Problem, ZeroHeuristic
 
 
-def solve(algorithm_class, problem: Problem):
+def solve(algorithm_class, problem: Problem, heuristic: Heuristic):
     """Solves a problem with a given search algorithm.
 
     Returns: Dictionary with a summary and key metrics.
     """
-    search_algorithm: SearchAlgorithm = algorithm_class(problem)
+    if issubclass(algorithm_class, HeuristicSearchAlgorithm):
+        search_algorithm: HeuristicSearchAlgorithm = algorithm_class(problem, heuristic)
+    elif issubclass(algorithm_class, SearchAlgorithm):
+        search_algorithm: SearchAlgorithm = algorithm_class(problem)
+    else:
+        raise ValueError("")
     assert search_algorithm is not None
 
     goal_node = search_algorithm.search()
@@ -86,14 +92,23 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
     metrics = list(best.keys())
 
     for a in algorithms:
-        solutions[a] = solve(a, problem)
-        for metric in metrics:
-            if solutions[a][metric] < best[metric]:
-                best[metric] = solutions[a][metric]
+        heuristics = [ZeroHeuristic(problem)]
+        if issubclass(a, HeuristicSearchAlgorithm):
+            heuristics = problem.all_heuristics()
+
+        for h in heuristics:
+            solutions[(a, h)] = solve(a, problem, h)
+            for metric in metrics:
+                if solutions[(a, h)][metric] < best[metric]:
+                    best[metric] = solutions[(a, h)][metric]
 
     metrics.remove("cost")
-    for a, solution in solutions.items():
-        print("  * {:20}: {}".format(a.name(), solution["summary"]))
+    for (a, h), solution in solutions.items():
+        if issubclass(a, HeuristicSearchAlgorithm):
+            print("  * {} + {}".format(a.name(), h))
+        else:
+            print("  * {}".format(a.name()))
+        print("    {}".format(solution["summary"]))
         if solution["cost"] > best["cost"]:
             print(
                 "    -",
@@ -110,7 +125,11 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
             )
         for metric in metrics:
             if solution[metric] > best[metric]:
-                ratio = solution[metric] / best[metric]
+                ratio = float('inf')
+                try:
+                    ratio = solution[metric] / best[metric]
+                except ZeroDivisionError:
+                    pass
                 color = None
                 attrs = []
                 if ratio < 1.04:
@@ -129,7 +148,7 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
                     "    - Not the best on {}!! {} ({} vs {})".format(
                         colored("{:12}".format(metric), color, attrs=attrs),
                         colored(
-                            "{:.2%}".format(solution[metric] / best[metric]),
+                            "{:.2%}".format(ratio),
                             color,
                             attrs=attrs,
                         ),
@@ -222,6 +241,7 @@ def main():
         DFS,
         BFS,
         Dijkstra,
+        AStar,
     ]
 
     for p in problems:
