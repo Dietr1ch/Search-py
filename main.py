@@ -102,13 +102,17 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
                 if solutions[(a, h)][metric] < best[metric]:
                     best[metric] = solutions[(a, h)][metric]
 
-    metrics.remove("cost")
     for (a, h), solution in solutions.items():
+        # Algorithm + Heuristic name
         if issubclass(a, HeuristicSearchAlgorithm):
             print("  * {} + {}".format(a.name(), h))
         else:
             print("  * {}".format(a.name()))
+
+        # Summary
         print("    {}".format(solution["summary"]))
+
+        # Check optimality
         if solution["cost"] > best["cost"]:
             print(
                 "    -",
@@ -123,39 +127,46 @@ def compare(algorithms: List[SearchAlgorithm], problem: Problem):
                     best["cost"],
                 ),
             )
-        for metric in metrics:
-            if solution[metric] > best[metric]:
-                ratio = float('inf')
-                try:
-                    ratio = solution[metric] / best[metric]
-                except ZeroDivisionError:
-                    pass
-                color = None
-                attrs = []
-                if ratio < 1.04:
-                    continue
 
-                if ratio >= 1.5:
-                    color = "red"
-                    attrs = ["bold"]
-                elif ratio >= 1.2:
-                    color = "yellow"
-                    attrs = ["bold"]
-                elif ratio >= 1.1:
-                    color = "white"
-                    attrs = ["bold"]
-                print(
-                    "    - Not the best on {}!! {} ({} vs {})".format(
-                        colored("{:12}".format(metric), color, attrs=attrs),
-                        colored(
-                            "{:.2%}".format(ratio),
-                            color,
-                            attrs=attrs,
-                        ),
-                        solution[metric],
-                        best[metric],
-                    )
+        # Print all metrics
+        for metric in metrics:
+            try:
+                ratio = solution[metric] / best[metric]
+            except ZeroDivisionError:
+                ratio = float('inf')
+
+            if ratio < 1.0:
+                raise ValueError(f"What's going on with metric '{metric}'?")
+            elif solution[metric] == best[metric]:
+                comment = "The best "
+                color = "green"
+                attrs = ["bold"]
+            elif ratio <= 1.15:
+                comment = "Not bad  "
+                color = "white"
+                attrs = ["bold"]
+            elif ratio <= 1.4:
+                comment = "Not awful"
+                color = "yellow"
+                attrs = ["bold"]
+            else:
+                comment = "Terrible "
+                color = "red"
+                attrs = ["bold"]
+
+            print(
+                "    - {} on {}!! {} ({} vs {})".format(
+                    comment,
+                    colored("{:12}".format(metric), color, attrs=attrs),
+                    colored(
+                        "{:.2%}".format(ratio),
+                        color,
+                        attrs=attrs,
+                    ),
+                    solution[metric],
+                    best[metric],
                 )
+            )
     print("")
     return solutions
 
